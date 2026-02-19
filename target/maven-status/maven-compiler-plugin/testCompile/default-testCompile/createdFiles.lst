@@ -1,0 +1,16 @@
+fr\istic\taa\jaxrs\rest\OrganisateurResourceTest.class
+fr\istic\taa\jaxrs\service\TypeEvenementServiceTest.class
+fr\istic\taa\jaxrs\rest\AdministrateurResourceTest.class
+fr\istic\taa\jaxrs\rest\TypeEvenementResourceTest.class
+fr\istic\taa\jaxrs\service\TicketServiceTest.class
+fr\istic\taa\jaxrs\service\UtilisateurServiceTest.class
+fr\istic\taa\jaxrs\rest\PersonneResourceTest.class
+fr\istic\taa\jaxrs\rest\UtilisateurResourceTest.class
+fr\istic\taa\jaxrs\rest\ArtisteResourceTest.class
+fr\istic\taa\jaxrs\service\ArtisteServiceTest.class
+fr\istic\taa\jaxrs\rest\EvenementResourceTest.class
+fr\istic\taa\jaxrs\rest\TicketResourceTest.class
+fr\istic\taa\jaxrs\service\OrganisateurServiceTest.class
+fr\istic\taa\jaxrs\service\AdministrateurServiceTest.class
+fr\istic\taa\jaxrs\service\EvenementServiceTest.class
+fr\istic\taa\jaxrs\service\PersonneServiceTest.class

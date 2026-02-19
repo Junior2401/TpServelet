@@ -10,11 +10,11 @@
 	<url>http://maven.apache.org</url>
 	<dependencies>
 
-		<!-- https://mvnrepository.com/artifact/junit/junit -->
+		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter -->
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>5.9.2</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -40,6 +40,11 @@
 			<version>8.1.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.7.1</version>
+		</dependency>
 
 		<!-- ==== REST API ==== -->
 
@@ -51,8 +56,6 @@
 			<artifactId>resteasy-undertow</artifactId>
 			<version>6.2.4.Final</version>
 		</dependency>
-
-
 		<!--
 		https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-jackson2-provider -->
 		<dependency>
@@ -83,6 +86,17 @@
 			<artifactId>swagger-jaxrs2-servlet-initializer-v2</artifactId>
 			<version>2.2.15</version>
 		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.15.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>5.9.2</version>
+			<scope>test</scope>
+		</dependency>
 
 	</dependencies>
 	<build>
@@ -93,8 +107,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.0</version>
 				<configuration>
-					<source>11</source>
-					<target>11</target>
+					<source>25</source>
+					<target>25</target>
 				</configuration>
 			</plugin>
 

@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: fr.istic.taa.jaxrs.rest.TicketResourceTest
+-------------------------------------------------------------------------------
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.193 s -- in fr.istic.taa.jaxrs.rest.TicketResourceTest

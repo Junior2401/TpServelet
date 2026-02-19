@@ -1,0 +1,123 @@
+package fr.istic.taa.jaxrs.rest;
+
+import fr.istic.taa.jaxrs.domain.Administrateur;
+import fr.istic.taa.jaxrs.domain.Adresse;
+import fr.istic.taa.jaxrs.service.AdministrateurService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import jakarta.ws.rs.core.Response;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class AdministrateurResourceTest {
+
+    private AdministrateurResource resource;
+    private AdministrateurService service;
+    private Adresse adresse;
+
+    @BeforeEach
+    public void setUp() {
+        resource = new AdministrateurResource();
+        service = new AdministrateurService();
+        adresse = new Adresse(123, "Rue de Test", "Paris");
+    }
+
+    @Test
+    public void testGetAll() {
+        Response response = resource.getAll();
+        assertNotNull(response);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testGetById() {
+        Administrateur admin = service.creerAdministrateur(
+                "TestAdmin",
+                "Test",
+                "test@test.com",
+                "password",
+                adresse,
+                "ADMIN"
+        );
+
+        Response response = resource.getById(admin.getId());
+        assertNotNull(response);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testGetByIdNotFound() {
+        Response response = resource.getById(99999L);
+        assertNotNull(response);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testCreate() {
+        Administrateur admin = new Administrateur();
+        admin.setNom("NewAdmin");
+        admin.setPrenom("New");
+        admin.setEmail("new@test.com");
+        admin.setPassword("password");
+        admin.setAdresse(adresse);
+        admin.setRole("ADMIN");
+
+        Response response = resource.create(admin);
+        assertNotNull(response);
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testUpdate() {
+        Administrateur admin = service.creerAdministrateur(
+                "ToUpdate",
+                "Update",
+                "update@test.com",
+                "password",
+                adresse,
+                "ADMIN"
+        );
+
+        Administrateur updated = new Administrateur();
+        updated.setNom("Updated");
+        updated.setRole("SUPER_ADMIN");
+
+        Response response = resource.update(admin.getId(), updated);
+        assertNotNull(response);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testUpdateNotFound() {
+        Administrateur updated = new Administrateur();
+        updated.setNom("Updated");
+
+        Response response = resource.update(99999L, updated);
+        assertNotNull(response);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testDelete() {
+        Administrateur admin = service.creerAdministrateur(
+                "ToDelete",
+                "Delete",
+                "delete@test.com",
+                "password",
+                adresse,
+                "ADMIN"
+        );
+
+        Response response = resource.delete(admin.getId());
+        assertNotNull(response);
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testDeleteNotFound() {
+        Response response = resource.delete(99999L);
+        assertNotNull(response);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+    }
+}
+
