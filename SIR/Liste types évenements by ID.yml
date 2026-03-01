@@ -1,0 +1,15 @@
+info:
+  name: Liste types évenements by ID
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: http://localhost:8081/type_evenements/13
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

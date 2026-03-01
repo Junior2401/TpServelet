@@ -2,6 +2,7 @@ fr\istic\taa\jaxrs\rest\OrganisateurResource.class
 fr\istic\taa\jaxrs\dao\generic\ArtisteDao.class
 fr\istic\taa\jaxrs\service\EvenementService.class
 fr\istic\taa\jaxrs\rest\ArtisteResource.class
+fr\istic\taa\jaxrs\rest\SwaggerResource.class
 fr\istic\taa\jaxrs\dao\generic\AbstractJpaDao.class
 fr\istic\taa\jaxrs\rest\PersonneResource.class
 fr\istic\taa\jaxrs\tools\tools.class
