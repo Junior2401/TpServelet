@@ -30,7 +30,7 @@ public class ArtisteService {
     // READ ALL
     // -------------------------
     public List<Artiste> getAll() {
-        return artisteDao.findAllArtistes();
+        return artisteDao.findAll();
     }
 
     // -------------------------

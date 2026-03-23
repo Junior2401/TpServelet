@@ -2,6 +2,7 @@ package fr.istic.taa.jaxrs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
@@ -10,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
+@Schema(description = "Représente un organisateur d'événements")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
@@ -18,10 +20,14 @@ import java.util.Set;
 @DiscriminatorValue("ORGANISATEUR")
 public class Organisateur extends Personne {
 
+    @Schema(description = "Nom de la société de l'organisateur")
     private String societe;
+
+    @Schema(description = "Téléphone professionnel de l'organisateur")
     private String telephonePro;
 
     @ManyToMany(mappedBy = "organisateurs")
+    @Schema(description = "Liste des événements organisés")
     private Set<Evenement> evenements = new HashSet<>();
 
     public Set<Evenement> getEvenements() {

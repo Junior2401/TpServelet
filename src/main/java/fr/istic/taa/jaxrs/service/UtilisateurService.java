@@ -29,7 +29,7 @@ public class UtilisateurService {
     // READ ALL
     // -------------------------
     public List<Utilisateur> getAll() {
-        return utilisateurDao.findAllUtilisateurs();
+        return utilisateurDao.findAll();
     }
 
     // -------------------------

@@ -1,13 +1,15 @@
 package fr.istic.taa.jaxrs.rest;
 
 import fr.istic.taa.jaxrs.domain.Administrateur;
-import fr.istic.taa.jaxrs.domain.Adresse;
+import fr.istic.taa.jaxrs.dto.AdministrateurDTO;
 import fr.istic.taa.jaxrs.service.AdministrateurService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("administrateurs")
 @Produces(MediaType.APPLICATION_JSON)
@@ -20,9 +22,13 @@ public class AdministrateurResource {
     // GET /administrateurs
     // -------------------------
     @GET
+    @Operation(summary = "Liste tous les administrateurs")
     public Response getAll() {
-        List<Administrateur> list = service.getAll();
-        return Response.ok(list).build();
+        List<AdministrateurDTO> dtos = service.getAll()
+                .stream()
+                .map(AdministrateurDTO::fromEntity)
+                .collect(Collectors.toList());
+        return Response.ok(dtos).build();
     }
 
     // -------------------------
@@ -30,19 +36,28 @@ public class AdministrateurResource {
     // -------------------------
     @GET
     @Path("/{id}")
+    @Operation(summary = "Récupère un administrateur par ID")
     public Response getById(@PathParam("id") Long id) {
         Administrateur admin = service.getById(id);
         if (admin == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(admin).build();
+        return Response.ok(AdministrateurDTO.fromEntity(admin)).build();
     }
 
     // -------------------------
     // POST /administrateurs
     // -------------------------
     @POST
-    public Response create(Administrateur administrateur) {
+    @Operation(summary = "Crée un nouvel administrateur")
+    public Response create(AdministrateurDTO dto) {
+        Administrateur administrateur = new Administrateur();
+        administrateur.setNom(dto.nom);
+        administrateur.setPrenom(dto.prenom);
+        administrateur.setEmail(dto.email);
+        administrateur.setPassword(dto.password);
+        administrateur.setRole(dto.role);
+
         Administrateur created = service.creerAdministrateur(
                 administrateur.getNom(),
                 administrateur.getPrenom(),
@@ -51,7 +66,7 @@ public class AdministrateurResource {
                 administrateur.getAdresse(),
                 administrateur.getRole()
         );
-        return Response.status(Response.Status.CREATED).entity(created).build();
+        return Response.status(Response.Status.CREATED).entity(AdministrateurDTO.fromEntity(created)).build();
     }
 
     // -------------------------
@@ -59,12 +74,20 @@ public class AdministrateurResource {
     // -------------------------
     @PUT
     @Path("/{id}")
-    public Response update(@PathParam("id") Long id, Administrateur updated) {
+    @Operation(summary = "Met à jour un administrateur")
+    public Response update(@PathParam("id") Long id, AdministrateurDTO dto) {
+        Administrateur updated = new Administrateur();
+        updated.setNom(dto.nom);
+        updated.setPrenom(dto.prenom);
+        updated.setEmail(dto.email);
+        updated.setPassword(dto.password);
+        updated.setRole(dto.role);
+
         Administrateur saved = service.update(id, updated);
         if (saved == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(saved).build();
+        return Response.ok(AdministrateurDTO.fromEntity(saved)).build();
     }
 
     // -------------------------
@@ -72,6 +95,7 @@ public class AdministrateurResource {
     // -------------------------
     @DELETE
     @Path("/{id}")
+    @Operation(summary = "Supprime un administrateur")
     public Response delete(@PathParam("id") Long id) {
         Administrateur existing = service.getById(id);
         if (existing == null) {

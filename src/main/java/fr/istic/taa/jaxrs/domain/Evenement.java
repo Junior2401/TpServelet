@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fr.istic.taa.jaxrs.tools.tools;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+@Schema(description = "Représente un événement (concert, théâtre, etc.)")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
@@ -22,29 +24,39 @@ public class Evenement implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "Identifiant unique de l'événement")
     private Long id;
 
+    @Schema(description = "Libellé/nom de l'événement")
     private String libelle;
+
+    @Schema(description = "Lieu de l'événement")
     private String lieu;
 
+    @Schema(description = "Date et heure de l'événement")
     private LocalDateTime date;
 
+    @Schema(description = "Capacité d'accueil")
     private Integer capacite;
 
     @Column(nullable = true)
+    @Schema(description = "Description de l'événement")
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @Schema(description = "Statut de l'événement (PLANIFIE, EN_COURS, TERMINE)")
     private tools.StatutEvenement statut;
 
     // --- TypeEvenement ↔ Evenement ---
     @ManyToOne
     @JoinColumn(name = "type_evenement_id")
+    @Schema(description = "Type d'événement associé")
     private TypeEvenement typeEvenement;
 
 
     // --- Evenement ↔ Ticket ---
     @OneToMany(mappedBy = "evenement", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Schema(description = "Liste des tickets vendus pour cet événement")
     private Collection<Ticket> tickets;
 
 
@@ -55,7 +67,7 @@ public class Evenement implements Serializable {
             joinColumns = @JoinColumn(name = "evenement_id"),
             inverseJoinColumns = @JoinColumn(name = "organisateur_id")
     )
-
+    @Schema(description = "Liste des organisateurs de cet événement")
     private Set<Organisateur> organisateurs = new HashSet<>();
 
 
@@ -66,7 +78,7 @@ public class Evenement implements Serializable {
             joinColumns = @JoinColumn(name = "evenement_id"),
             inverseJoinColumns = @JoinColumn(name = "artiste_id")
     )
-
+    @Schema(description = "Liste des artistes participant à cet événement")
     private Set<Artiste> artistes = new HashSet<>();
 
     public Collection<Organisateur> getOrganisateurs() {

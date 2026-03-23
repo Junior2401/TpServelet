@@ -28,14 +28,14 @@ public class TypeEvenementService {
     // READ ALL
     // -------------------------
     public List<TypeEvenement> getAll() {
-        return typeEvenementDao.findAllTypeEvenements();
+        return typeEvenementDao.findAll();
     }
 
     // -------------------------
     // READ BY ID
     // -------------------------
     public TypeEvenement getById(Long id) {
-        return typeEvenementDao.findByIdTypeEvenement(id.intValue());
+        return typeEvenementDao.findOne(id);
     }
 
     // -------------------------
@@ -61,8 +61,8 @@ public class TypeEvenementService {
     // -------------------------
     // DELETE
     // -------------------------
-    public void delete(Long id) {
-        typeEvenementDao.deleteById(id);
+    public void delete(TypeEvenement typeEvenement) {
+        typeEvenementDao.delete(typeEvenement);
     }
 
 

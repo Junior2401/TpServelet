@@ -29,7 +29,7 @@ public class OrganisateurService {
     // READ ALL
     // -------------------------
     public List<Organisateur> getAll() {
-        return organisateurDao.findAllOrganisateurs();
+        return organisateurDao.findAll();
     }
 
     // -------------------------

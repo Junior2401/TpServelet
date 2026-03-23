@@ -1,14 +1,17 @@
 package fr.istic.taa.jaxrs.rest;
 
 import fr.istic.taa.jaxrs.domain.Evenement;
+import fr.istic.taa.jaxrs.dto.EvenementDTO;
 import fr.istic.taa.jaxrs.service.EvenementService;
 import fr.istic.taa.jaxrs.tools.tools;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("evenements")
 @Produces(MediaType.APPLICATION_JSON)
@@ -21,9 +24,13 @@ public class EvenementResource {
     // GET /evenements
     // -------------------------
     @GET
+    @Operation(summary = "Liste tous les événements")
     public Response getAll() {
-        List<Evenement> list = service.getAll();
-        return Response.ok(list).build();
+        List<EvenementDTO> dtos = service.getAll()
+                .stream()
+                .map(EvenementDTO::fromEntity)
+                .collect(Collectors.toList());
+        return Response.ok(dtos).build();
     }
 
     // -------------------------
@@ -31,19 +38,31 @@ public class EvenementResource {
     // -------------------------
     @GET
     @Path("/{id}")
+    @Operation(summary = "Récupère un événement par ID")
     public Response getById(@PathParam("id") Long id) {
         Evenement evenement = service.getById(id);
         if (evenement == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(evenement).build();
+        return Response.ok(EvenementDTO.fromEntity(evenement)).build();
     }
 
     // -------------------------
     // POST /evenements
     // -------------------------
     @POST
-    public Response create(Evenement evenement) {
+    @Operation(summary = "Crée un nouvel événement")
+    public Response create(EvenementDTO dto) {
+        Evenement evenement = new Evenement();
+        evenement.setLibelle(dto.libelle);
+        evenement.setLieu(dto.lieu);
+        evenement.setDate(dto.date);
+        evenement.setCapacite(dto.capacite);
+        evenement.setDescription(dto.description);
+        if (dto.statut != null) {
+            evenement.setStatut(tools.StatutEvenement.valueOf(dto.statut));
+        }
+
         Evenement created = service.creerEvenement(
                 evenement.getLibelle(),
                 evenement.getLieu(),
@@ -51,9 +70,9 @@ public class EvenementResource {
                 evenement.getCapacite(),
                 evenement.getDescription(),
                 evenement.getStatut(),
-                evenement.getTypeEvenement().getId().intValue()
+                dto.typeEvenementId.intValue()
         );
-        return Response.status(Response.Status.CREATED).entity(created).build();
+        return Response.status(Response.Status.CREATED).entity(EvenementDTO.fromEntity(created)).build();
     }
 
     // -------------------------
@@ -61,12 +80,23 @@ public class EvenementResource {
     // -------------------------
     @PUT
     @Path("/{id}")
-    public Response update(@PathParam("id") Long id, Evenement updated) {
+    @Operation(summary = "Met à jour un événement")
+    public Response update(@PathParam("id") Long id, EvenementDTO dto) {
+        Evenement updated = new Evenement();
+        updated.setLibelle(dto.libelle);
+        updated.setLieu(dto.lieu);
+        updated.setDate(dto.date);
+        updated.setCapacite(dto.capacite);
+        updated.setDescription(dto.description);
+        if (dto.statut != null) {
+            updated.setStatut(tools.StatutEvenement.valueOf(dto.statut));
+        }
+
         Evenement saved = service.update(id, updated);
         if (saved == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(saved).build();
+        return Response.ok(EvenementDTO.fromEntity(saved)).build();
     }
 
     // -------------------------
@@ -74,6 +104,7 @@ public class EvenementResource {
     // -------------------------
     @DELETE
     @Path("/{id}")
+    @Operation(summary = "Supprime un événement")
     public Response delete(@PathParam("id") Long id) {
         Evenement existing = service.getById(id);
         if (existing == null) {
@@ -88,6 +119,7 @@ public class EvenementResource {
     // -------------------------
     @GET
     @Path("/{id}/organisateurs")
+    @Operation(summary = "Liste les organisateurs d'un événement")
     public Response getOrganisateurs(@PathParam("id") Long id) {
         Evenement evenement = service.getById(id);
         if (evenement == null) {
@@ -101,6 +133,7 @@ public class EvenementResource {
     // -------------------------
     @GET
     @Path("/{id}/artistes")
+    @Operation(summary = "Liste les artistes d'un événement")
     public Response getArtistes(@PathParam("id") Long id) {
         Evenement evenement = service.getById(id);
         if (evenement == null) {
@@ -114,6 +147,7 @@ public class EvenementResource {
     // -------------------------
     @GET
     @Path("/{id}/tickets")
+    @Operation(summary = "Liste les tickets d'un événement")
     public Response getTickets(@PathParam("id") Long id) {
         Evenement evenement = service.getById(id);
         if (evenement == null) {
@@ -127,12 +161,13 @@ public class EvenementResource {
     // -------------------------
     @POST
     @Path("/{id}/organisateurs/{organisateurId}")
+    @Operation(summary = "Ajoute un organisateur à un événement")
     public Response ajouterOrganisateur(@PathParam("id") Long id, @PathParam("organisateurId") Long organisateurId) {
         Evenement updated = service.ajouterOrganisateur(id.intValue(), organisateurId.intValue());
         if (updated == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(updated).build();
+        return Response.ok(EvenementDTO.fromEntity(updated)).build();
     }
 
     // -------------------------
@@ -140,12 +175,13 @@ public class EvenementResource {
     // -------------------------
     @POST
     @Path("/{id}/artistes/{artisteId}")
+    @Operation(summary = "Ajoute un artiste à un événement")
     public Response ajouterArtiste(@PathParam("id") Long id, @PathParam("artisteId") Long artisteId) {
-        Evenement updated = service.ajouterArtiste(id.intValue(), artisteId.intValue());
+        Evenement updated = service.ajouterArtiste(id.intValue(), artisteId);
         if (updated == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(updated).build();
+        return Response.ok(EvenementDTO.fromEntity(updated)).build();
     }
 }
 

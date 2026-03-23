@@ -19,7 +19,7 @@ public class PersonneService {
     // READ ALL
     // -------------------------
     public List<Personne> getAll() {
-        return personneDao.findAllPersonnes();
+        return personneDao.findAll();
     }
 
     // -------------------------

@@ -2,12 +2,14 @@ package fr.istic.taa.jaxrs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Objects;
 
+@Schema(description = "Représente un type d'événement (Concert, Théâtre, etc.)")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
@@ -17,14 +19,18 @@ public class TypeEvenement implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "Identifiant unique du type d'événement")
     private Long id;
 
+    @Schema(description = "Libellé du type d'événement")
     private String libelle;
 
     @Column(nullable = true)
+    @Schema(description = "Description du type d'événement")
     private String description;
 
     @OneToMany(mappedBy = "typeEvenement")
+    @Schema(description = "Liste des événements de ce type")
     private Collection<Evenement> evenements;
 
     public TypeEvenement() {}

@@ -1,12 +1,15 @@
 package fr.istic.taa.jaxrs.rest;
 
 import fr.istic.taa.jaxrs.domain.Organisateur;
+import fr.istic.taa.jaxrs.dto.OrganisateurDTO;
 import fr.istic.taa.jaxrs.service.OrganisateurService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("organisateurs")
 @Produces(MediaType.APPLICATION_JSON)
@@ -19,9 +22,13 @@ public class OrganisateurResource {
     // GET /organisateurs
     // -------------------------
     @GET
+    @Operation(summary = "Liste tous les organisateurs")
     public Response getAll() {
-        List<Organisateur> list = service.getAll();
-        return Response.ok(list).build();
+        List<OrganisateurDTO> dtos = service.getAll()
+                .stream()
+                .map(OrganisateurDTO::fromEntity)
+                .collect(Collectors.toList());
+        return Response.ok(dtos).build();
     }
 
     // -------------------------
@@ -29,19 +36,29 @@ public class OrganisateurResource {
     // -------------------------
     @GET
     @Path("/{id}")
+    @Operation(summary = "Récupère un organisateur par ID")
     public Response getById(@PathParam("id") Long id) {
         Organisateur organisateur = service.getById(id);
         if (organisateur == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(organisateur).build();
+        return Response.ok(OrganisateurDTO.fromEntity(organisateur)).build();
     }
 
     // -------------------------
     // POST /organisateurs
     // -------------------------
     @POST
-    public Response create(Organisateur organisateur) {
+    @Operation(summary = "Crée un nouvel organisateur")
+    public Response create(OrganisateurDTO dto) {
+        Organisateur organisateur = new Organisateur();
+        organisateur.setNom(dto.nom);
+        organisateur.setPrenom(dto.prenom);
+        organisateur.setEmail(dto.email);
+        organisateur.setPassword(dto.password);
+        organisateur.setSociete(dto.societe);
+        organisateur.setTelephonePro(dto.telephonePro);
+
         Organisateur created = service.creerOrganisateur(
                 organisateur.getNom(),
                 organisateur.getPrenom(),
@@ -51,7 +68,7 @@ public class OrganisateurResource {
                 organisateur.getSociete(),
                 organisateur.getTelephonePro()
         );
-        return Response.status(Response.Status.CREATED).entity(created).build();
+        return Response.status(Response.Status.CREATED).entity(OrganisateurDTO.fromEntity(created)).build();
     }
 
     // -------------------------
@@ -59,12 +76,21 @@ public class OrganisateurResource {
     // -------------------------
     @PUT
     @Path("/{id}")
-    public Response update(@PathParam("id") Long id, Organisateur updated) {
+    @Operation(summary = "Met à jour un organisateur")
+    public Response update(@PathParam("id") Long id, OrganisateurDTO dto) {
+        Organisateur updated = new Organisateur();
+        updated.setNom(dto.nom);
+        updated.setPrenom(dto.prenom);
+        updated.setEmail(dto.email);
+        updated.setPassword(dto.password);
+        updated.setSociete(dto.societe);
+        updated.setTelephonePro(dto.telephonePro);
+
         Organisateur saved = service.update(id, updated);
         if (saved == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(saved).build();
+        return Response.ok(OrganisateurDTO.fromEntity(saved)).build();
     }
 
     // -------------------------
@@ -72,6 +98,7 @@ public class OrganisateurResource {
     // -------------------------
     @DELETE
     @Path("/{id}")
+    @Operation(summary = "Supprime un organisateur")
     public Response delete(@PathParam("id") Long id) {
         Organisateur existing = service.getById(id);
         if (existing == null) {
@@ -86,6 +113,7 @@ public class OrganisateurResource {
     // -------------------------
     @GET
     @Path("/{id}/evenements")
+    @Operation(summary = "Liste les événements d'un organisateur")
     public Response getEvenements(@PathParam("id") Long id) {
         Organisateur organisateur = service.getById(id);
         if (organisateur == null) {

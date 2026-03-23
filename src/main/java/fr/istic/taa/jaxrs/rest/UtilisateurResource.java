@@ -1,12 +1,15 @@
 package fr.istic.taa.jaxrs.rest;
 
 import fr.istic.taa.jaxrs.domain.Utilisateur;
+import fr.istic.taa.jaxrs.dto.UtilisateurDTO;
 import fr.istic.taa.jaxrs.service.UtilisateurService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("utilisateurs")
 @Produces(MediaType.APPLICATION_JSON)
@@ -19,9 +22,13 @@ public class UtilisateurResource {
     // GET /utilisateurs
     // -------------------------
     @GET
+    @Operation(summary = "Liste tous les utilisateurs")
     public Response getAll() {
-        List<Utilisateur> list = service.getAll();
-        return Response.ok(list).build();
+        List<UtilisateurDTO> dtos = service.getAll()
+                .stream()
+                .map(UtilisateurDTO::fromEntity)
+                .collect(Collectors.toList());
+        return Response.ok(dtos).build();
     }
 
     // -------------------------
@@ -29,19 +36,28 @@ public class UtilisateurResource {
     // -------------------------
     @GET
     @Path("/{id}")
+    @Operation(summary = "Récupère un utilisateur par ID")
     public Response getById(@PathParam("id") Long id) {
         Utilisateur utilisateur = service.getById(id);
         if (utilisateur == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(utilisateur).build();
+        return Response.ok(UtilisateurDTO.fromEntity(utilisateur)).build();
     }
 
     // -------------------------
     // POST /utilisateurs
     // -------------------------
     @POST
-    public Response create(Utilisateur utilisateur) {
+    @Operation(summary = "Crée un nouvel utilisateur")
+    public Response create(UtilisateurDTO dto) {
+        Utilisateur utilisateur = new Utilisateur();
+        utilisateur.setNom(dto.nom);
+        utilisateur.setPrenom(dto.prenom);
+        utilisateur.setEmail(dto.email);
+        utilisateur.setPassword(dto.password);
+        utilisateur.setTelephone(dto.telephone);
+
         Utilisateur created = service.creerUtilisateur(
                 utilisateur.getNom(),
                 utilisateur.getPrenom(),
@@ -50,7 +66,7 @@ public class UtilisateurResource {
                 utilisateur.getAdresse(),
                 utilisateur.getTelephone()
         );
-        return Response.status(Response.Status.CREATED).entity(created).build();
+        return Response.status(Response.Status.CREATED).entity(UtilisateurDTO.fromEntity(created)).build();
     }
 
     // -------------------------
@@ -58,12 +74,20 @@ public class UtilisateurResource {
     // -------------------------
     @PUT
     @Path("/{id}")
-    public Response update(@PathParam("id") Long id, Utilisateur updated) {
+    @Operation(summary = "Met à jour un utilisateur")
+    public Response update(@PathParam("id") Long id, UtilisateurDTO dto) {
+        Utilisateur updated = new Utilisateur();
+        updated.setNom(dto.nom);
+        updated.setPrenom(dto.prenom);
+        updated.setEmail(dto.email);
+        updated.setPassword(dto.password);
+        updated.setTelephone(dto.telephone);
+
         Utilisateur saved = service.update(id, updated);
         if (saved == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok(saved).build();
+        return Response.ok(UtilisateurDTO.fromEntity(saved)).build();
     }
 
     // -------------------------
@@ -71,6 +95,7 @@ public class UtilisateurResource {
     // -------------------------
     @DELETE
     @Path("/{id}")
+    @Operation(summary = "Supprime un utilisateur")
     public Response delete(@PathParam("id") Long id) {
         Utilisateur existing = service.getById(id);
         if (existing == null) {

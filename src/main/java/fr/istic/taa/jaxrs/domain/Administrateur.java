@@ -1,11 +1,14 @@
 package fr.istic.taa.jaxrs.domain;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
+@Schema(description = "Représente un administrateur du système")
 @Entity
 @DiscriminatorValue("ADMIN")
 public class Administrateur extends Personne{
+    @Schema(description = "Rôle de l'administrateur")
     private String role;
 
     public Administrateur() {

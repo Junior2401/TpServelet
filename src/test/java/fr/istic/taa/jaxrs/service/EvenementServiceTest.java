@@ -198,8 +198,8 @@ public class EvenementServiceTest {
         );
 
         Evenement updated = service.ajouterArtiste(
-                event.getId().intValue(),
-                artist.getId().intValue()
+                event.getId(),
+                artist.getId()
         );
 
         assertNotNull(updated);

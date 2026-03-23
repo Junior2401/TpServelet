@@ -3,7 +3,11 @@ package fr.istic.taa.jaxrs.domain;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fr.istic.taa.jaxrs.tools.tools;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -13,6 +17,30 @@ import java.time.LocalDateTime;
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
 )
+@NamedQueries({
+        @NamedQuery(
+                name = "Ticket.findByUtilisateur",
+                query = "SELECT t FROM Ticket t WHERE t.utilisateur.id = :userId"
+        ),
+        @NamedQuery(
+                name = "Ticket.findByEvenement",
+                query = "SELECT t FROM Ticket t WHERE t.evenement.id = :eventId"
+        ),
+        @NamedQuery(
+                name = "Ticket.findByStatut",
+                query = "SELECT t FROM Ticket t WHERE t.statut = :statut"
+        ),
+        @NamedQuery(
+                name = "Ticket.findPurchasedAfter",
+                query = "SELECT t FROM Ticket t WHERE t.dateAchat >= :dateMin"
+        ),
+        @NamedQuery(
+                name = "Ticket.findCancelledNotRefunded",
+                query = "SELECT t FROM Ticket t WHERE t.dateAnnulation IS NOT NULL AND t.dateRemboursement IS NULL"
+        )
+})
+
+@Schema(description = "Représente les ticket des évènements en cours")
 @Entity
 public class Ticket implements Serializable {
 
@@ -20,15 +48,23 @@ public class Ticket implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    @Positive
+    @Schema(description = "Numéro unique du ticket")
     private String numeroPlace;
 
+    @NotBlank
     private String place;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private tools.StatutTicket statut;
 
+    @NotNull
+    @Positive
     private Integer prix;
 
+    @Column(nullable = false)
     private LocalDateTime dateAchat;
 
     @Column(nullable = true)
@@ -37,11 +73,11 @@ public class Ticket implements Serializable {
     @Column(nullable = true)
     private LocalDateTime dateRemboursement;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "evenement_id")
     private Evenement evenement;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "utilisateur_id")
     private Utilisateur utilisateur;
 
@@ -121,6 +157,10 @@ public class Ticket implements Serializable {
         return dateAchat;
     }
 
+    @PrePersist
+    public void onCreate() {
+        this.dateAchat = LocalDateTime.now();
+    }
     public void setDateAchat(LocalDateTime dateAchat) {
         this.dateAchat = dateAchat;
     }
@@ -157,5 +197,9 @@ public class Ticket implements Serializable {
         this.utilisateur = utilisateur;
     }
 
+    @Transient
+    public boolean isRemboursable() {
+        return this.dateAnnulation != null && this.dateRemboursement == null;
+    }
 }
 

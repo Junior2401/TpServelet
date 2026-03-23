@@ -41,7 +41,7 @@ public class EvenementService {
                                     tools.StatutEvenement statut,
                                     int typeEvenementId) {
 
-        TypeEvenement type = typeEvenementDao.findByIdTypeEvenement(typeEvenementId);
+        TypeEvenement type = typeEvenementDao.findOne((long) typeEvenementId);
 
         if (type == null) {
             throw new IllegalArgumentException("Type d'évènement introuvable : " + typeEvenementId);
@@ -66,7 +66,7 @@ public class EvenementService {
     // READ ALL
     // -------------------------
     public List<Evenement> getAll() {
-        return evenementDao.findAllEvenements();
+        return evenementDao.findAll();
     }
 
     // -------------------------
@@ -126,10 +126,10 @@ public class EvenementService {
     // -------------------------
     // AJOUTER UN ORGANISATEUR A UN EVENEMENT
     // -------------------------
-    public Evenement ajouterOrganisateur(int evenementId, int organisateurId) {
+    public Evenement ajouterOrganisateur(long evenementId, int organisateurId) {
 
-        Evenement evenement = evenementDao.findByIdEvenement(evenementId);
-        Organisateur organisateur = organisateurDao.findByIdTypeOrganisateur(organisateurId);
+        Evenement evenement = evenementDao.findOne(evenementId);
+        Organisateur organisateur = organisateurDao.findOne((long) organisateurId);
 
         if (evenement == null || organisateur == null) {
             throw new IllegalArgumentException("Évènement ou organisateur introuvable");
@@ -145,10 +145,10 @@ public class EvenementService {
     // -------------------------
     // AJOUTER UN ARTISTE A UN EVENEMENT
     // -------------------------
-    public Evenement ajouterArtiste(int evenementId, int artisteId) {
+    public Evenement ajouterArtiste(long evenementId, Long artisteId) {
 
-        Evenement evenement = evenementDao.findByIdEvenement(evenementId);
-        Artiste artiste = artisteDao.findArtisteByIdArtistes(artisteId);
+        Evenement evenement = evenementDao.findOne(evenementId);
+        Artiste artiste = artisteDao.findOne(artisteId);
 
         if (evenement == null || artiste == null) {
             throw new IllegalArgumentException("Évènement ou artiste introuvable");

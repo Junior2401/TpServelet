@@ -30,7 +30,7 @@ public class AdministrateurService {
     // READ ALL
     // -------------------------
     public List<Administrateur> getAll() {
-        return administrateurDao.findAllAdmins();
+        return administrateurDao.findAll();
     }
 
     // -------------------------

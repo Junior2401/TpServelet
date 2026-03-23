@@ -2,6 +2,7 @@ package fr.istic.taa.jaxrs.rest;
 
 import fr.istic.taa.jaxrs.domain.Personne;
 import fr.istic.taa.jaxrs.service.PersonneService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -19,6 +20,7 @@ public class PersonneResource {
     // GET /personnes
     // -------------------------
     @GET
+    @Operation(summary = "Liste toutes les personnes")
     public Response getAll() {
         List<Personne> list = service.getAll();
         return Response.ok(list).build();
@@ -29,6 +31,7 @@ public class PersonneResource {
     // -------------------------
     @GET
     @Path("/{id}")
+    @Operation(summary = "Récupère une personne par ID")
     public Response getById(@PathParam("id") Long id) {
         Personne personne = service.getById(id);
         if (personne == null) {
@@ -42,6 +45,7 @@ public class PersonneResource {
     // -------------------------
     @PUT
     @Path("/{id}")
+    @Operation(summary = "Met à jour une personne")
     public Response update(@PathParam("id") Long id, Personne updated) {
         Personne saved = service.update(id, updated);
         if (saved == null) {
@@ -55,6 +59,7 @@ public class PersonneResource {
     // -------------------------
     @DELETE
     @Path("/{id}")
+    @Operation(summary = "Supprime une personne")
     public Response delete(@PathParam("id") Long id) {
         Personne existing = service.getById(id);
         if (existing == null) {
