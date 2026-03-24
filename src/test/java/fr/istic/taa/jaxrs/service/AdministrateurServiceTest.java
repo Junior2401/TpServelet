@@ -110,5 +110,52 @@ public class AdministrateurServiceTest {
         Administrateur admin = service.getById(99999L);
         assertNull(admin);
     }
-}
 
+    @Test
+    public void testGetByRole() {
+        service.creerAdministrateur("Admin1", "First", "admin1@test.com", "pass1", adresse, "ADMIN");
+        service.creerAdministrateur("Admin2", "Second", "admin2@test.com", "pass2", adresse, "SUPER_ADMIN");
+
+        List<Administrateur> admins = service.getByRole("ADMIN");
+        List<Administrateur> supers = service.getByRole("SUPER_ADMIN");
+
+        assertNotNull(admins);
+        assertNotNull(supers);
+        assertTrue(admins.size() >= 1);
+        assertTrue(supers.size() >= 1);
+    }
+
+    @Test
+    public void testGetByEmail() {
+        service.creerAdministrateur("Admin1", "First", "unique@admin.com", "pass1", adresse, "ADMIN");
+        service.creerAdministrateur("Admin2", "Second", "another@admin.com", "pass2", adresse, "ADMIN");
+
+        Administrateur byEmail = service.getUniqueByEmail("unique@admin.com");
+        assertNotNull(byEmail);
+        assertEquals("unique@admin.com", byEmail.getEmail());
+    }
+
+    @Test
+    public void testGetTotalAdministrateurs() {
+        service.creerAdministrateur("Admin1", "First", "admin1@test.com", "pass1", adresse, "ADMIN");
+        service.creerAdministrateur("Admin2", "Second", "admin2@test.com", "pass2", adresse, "ADMIN");
+
+        Long total = service.getTotalAdministrateurs();
+        assertNotNull(total);
+        assertTrue(total >= 2);
+    }
+
+    @Test
+    public void testGetRepartitionParRole() {
+        service.creerAdministrateur("Admin1", "First", "admin1@test.com", "pass1", adresse, "ADMIN");
+        service.creerAdministrateur("Admin2", "Second", "admin2@test.com", "pass2", adresse, "SUPER_ADMIN");
+        service.creerAdministrateur("Admin3", "Third", "admin3@test.com", "pass3", adresse, "ADMIN");
+
+        java.util.Map<String, Long> repartition = service.getRepartitionParRole();
+        assertNotNull(repartition);
+        assertTrue(repartition.containsKey("ADMIN"));
+        assertTrue(repartition.containsKey("SUPER_ADMIN"));
+        assertEquals(2, repartition.get("ADMIN"));
+        assertEquals(1, repartition.get("SUPER_ADMIN"));
+    }
+}

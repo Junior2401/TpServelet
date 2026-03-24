@@ -4,6 +4,7 @@ import fr.istic.taa.jaxrs.domain.Administrateur;
 import fr.istic.taa.jaxrs.dto.AdministrateurDTO;
 import fr.istic.taa.jaxrs.service.AdministrateurService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 @Path("administrateurs")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Tag(name = "Administrateurs")
 public class AdministrateurResource {
 
     private final AdministrateurService service = new AdministrateurService();

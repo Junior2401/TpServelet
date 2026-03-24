@@ -160,4 +160,51 @@ public class TicketDao extends AbstractJpaDao<Long, Ticket> {
                 .getResultList();
     }
 
+
+    // ---------------------------
+    // Quelques statistiques
+    //----------------------------
+    //Chiffre d'affaires total (hors annulations) :
+    public Long getTotalRevenue() {
+        return entityManager.createQuery(
+                        "SELECT SUM(t.prix) FROM Ticket t WHERE t.dateAnnulation IS NULL", Long.class)
+                .getSingleResult();
+    }
+
+    //Prix moyen d'un ticket vendu
+
+    public Double getAverageTicketPrice() {
+        return entityManager.createQuery(
+                        "SELECT AVG(t.prix) FROM Ticket t WHERE t.dateAnnulation IS NULL", Double.class)
+                .getSingleResult();
+    }
+
+    //Nombre de tickets par événement et par statut
+    public List<Object[]> getCountByStatusForEvent(Long eventId) {
+        return entityManager.createQuery(
+                        "SELECT t.statut, COUNT(t) FROM Ticket t WHERE t.evenement.id = :eventId GROUP BY t.statut",
+                        Object[].class)
+                .setParameter("eventId", eventId)
+                .getResultList();
+    }
+
+    //Statistiques Temporelles (Analyse des ventes)
+
+    public List<Object[]> getSalesVolumeByDay() {
+        return entityManager.createQuery(
+                        "SELECT CAST(t.dateAchat AS date), COUNT(t) FROM Ticket t GROUP BY CAST(t.dateAchat AS date) ORDER BY 1 ASC",
+                        Object[].class)
+                .getResultList();
+    }
+
+    //Taux d'annulation (en pourcentage) :
+
+    public Double getCancellationRate() {
+        String query = "SELECT (COUNT(t) * 100.0) / (SELECT COUNT(t2) FROM Ticket t2) " +
+                "FROM Ticket t WHERE t.dateAnnulation IS NOT NULL";
+        return entityManager.createQuery(query, Double.class).getSingleResult();
+    }
+
+
+
 }

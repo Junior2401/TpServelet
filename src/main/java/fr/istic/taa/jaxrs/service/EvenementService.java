@@ -39,9 +39,9 @@ public class EvenementService {
                                     Integer capacite,
                                     String description,
                                     tools.StatutEvenement statut,
-                                    int typeEvenementId) {
+                                    Long typeEvenementId) {
 
-        TypeEvenement type = typeEvenementDao.findOne((long) typeEvenementId);
+        TypeEvenement type = typeEvenementDao.findOne(typeEvenementId);
 
         if (type == null) {
             throw new IllegalArgumentException("Type d'évènement introuvable : " + typeEvenementId);
@@ -126,10 +126,10 @@ public class EvenementService {
     // -------------------------
     // AJOUTER UN ORGANISATEUR A UN EVENEMENT
     // -------------------------
-    public Evenement ajouterOrganisateur(long evenementId, int organisateurId) {
+    public Evenement ajouterOrganisateur(long evenementId, Long organisateurId) {
 
         Evenement evenement = evenementDao.findOne(evenementId);
-        Organisateur organisateur = organisateurDao.findOne((long) organisateurId);
+        Organisateur organisateur = organisateurDao.findOne(organisateurId);
 
         if (evenement == null || organisateur == null) {
             throw new IllegalArgumentException("Évènement ou organisateur introuvable");
@@ -159,5 +159,139 @@ public class EvenementService {
 
         evenementDao.update(evenement);
         return evenement;
+    }
+
+    // -------------------------
+    // MÉTHODES MÉTIER
+    // -------------------------
+
+    public List<Evenement> getByStatut(tools.StatutEvenement statut) {
+        return evenementDao.findByStatut(statut);
+    }
+
+    public List<Evenement> getByLibelle(String libelle) {
+        return evenementDao.findByLibelle(libelle);
+    }
+
+    public List<Evenement> getByLieu(String lieu) {
+        return evenementDao.findByLieu(lieu);
+    }
+
+    public List<Evenement> getByDateRange(LocalDateTime debut, LocalDateTime fin) {
+        return evenementDao.findByDateRange(debut, fin);
+    }
+
+    public List<Evenement> getUpcoming() {
+        return evenementDao.findUpcoming(LocalDateTime.now());
+    }
+
+    public List<Evenement> getPast() {
+        return evenementDao.findPast(LocalDateTime.now());
+    }
+
+    public List<Evenement> getByTypeEvenement(Long typeId) {
+        return evenementDao.findByTypeEvenementId(typeId);
+    }
+
+    public List<Evenement> getByCapaciteMin(Integer min) {
+        return evenementDao.findByCapaciteMin(min);
+    }
+
+    public List<Evenement> getByCapaciteRange(Integer min, Integer max) {
+        return evenementDao.findByCapaciteRange(min, max);
+    }
+
+    public List<Evenement> getByOrganisateur(Long orgId) {
+        return evenementDao.findAll().stream()
+                .filter(e -> e.getOrganisateurs().stream().anyMatch(o -> o.getId().equals(orgId)))
+                .toList();
+    }
+
+    public List<Evenement> getByArtiste(Long artisteId) {
+        return evenementDao.findAll().stream()
+                .filter(e -> e.getArtistes().stream().anyMatch(a -> a.getId().equals(artisteId)))
+                .toList();
+    }
+
+    public List<Evenement> getByDate(java.time.LocalDate date) {
+        return evenementDao.findAll().stream()
+                .filter(e -> e.getDate() != null && e.getDate().toLocalDate().equals(date))
+                .toList();
+    }
+
+    // -------------------------
+    // STATISTIQUES
+    // -------------------------
+
+    /**
+     * Calcule la capacité totale de tous les événements.
+     */
+    public Long getTotalCapacity() {
+        return evenementDao.findAll().stream()
+                .mapToLong(e -> e.getCapacite() != null ? e.getCapacite() : 0)
+                .sum();
+    }
+
+    /**
+     * Calcule la capacité moyenne des événements.
+     */
+    public Double getAverageCapacity() {
+        List<Evenement> events = evenementDao.findAll();
+        if (events.isEmpty()) return 0.0;
+        return events.stream()
+                .filter(e -> e.getCapacite() != null)
+                .mapToInt(Evenement::getCapacite)
+                .average()
+                .orElse(0.0);
+    }
+
+    /**
+     * Récupère le nombre d'événements par statut.
+     */
+    public java.util.Map<tools.StatutEvenement, Long> getRepartitionParStatut() {
+        return evenementDao.findAll().stream()
+                .collect(java.util.stream.Collectors.groupingBy(
+                        Evenement::getStatut,
+                        java.util.stream.Collectors.counting()
+                ));
+    }
+
+    /**
+     * Récupère le nombre d'événements par type.
+     */
+    public java.util.Map<String, Long> getRepartitionParType() {
+        return evenementDao.findAll().stream()
+                .filter(e -> e.getTypeEvenement() != null)
+                .collect(java.util.stream.Collectors.groupingBy(
+                        e -> e.getTypeEvenement().getLibelle(),
+                        java.util.stream.Collectors.counting()
+                ));
+    }
+
+    public Long getTotalEvents() {
+        return (long) evenementDao.findAll().size();
+    }
+
+    public java.util.Map<String, Long> getEventsByMonth(int year) {
+        return evenementDao.findAll().stream()
+                .filter(e -> e.getDate() != null && e.getDate().getYear() == year)
+                .collect(java.util.stream.Collectors.groupingBy(
+                        e -> java.time.format.DateTimeFormatter.ofPattern("MMMM").format(e.getDate()),
+                        java.util.stream.Collectors.counting()
+                ));
+    }
+
+    /**
+     * Nombre d'événements à venir.
+     */
+    public Long getNombreEvenementsAVenir() {
+        return (long) getUpcoming().size();
+    }
+
+    /**
+     * Nombre d'événements passés.
+     */
+    public Long getNombreEvenementsPasses() {
+        return (long) getPast().size();
     }
 }

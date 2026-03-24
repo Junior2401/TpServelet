@@ -3,6 +3,7 @@ package fr.istic.taa.jaxrs.rest;
 import fr.istic.taa.jaxrs.domain.Utilisateur;
 import fr.istic.taa.jaxrs.domain.Adresse;
 import fr.istic.taa.jaxrs.service.UtilisateurService;
+import fr.istic.taa.jaxrs.dto.UtilisateurDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import jakarta.ws.rs.core.Response;
@@ -54,15 +55,14 @@ public class UtilisateurResourceTest {
 
     @Test
     public void testCreate() {
-        Utilisateur user = new Utilisateur();
-        user.setNom("NewUser");
-        user.setPrenom("New");
-        user.setEmail("new@test.com");
-        user.setPassword("password");
-        user.setAdresse(adresse);
-        user.setTelephone("0123456789");
+        UtilisateurDTO dto = new UtilisateurDTO();
+        dto.nom = "NewUser";
+        dto.prenom = "New";
+        dto.email = "new@test.com";
+        dto.password = "password";
+        dto.telephone = "0123456789";
 
-        Response response = resource.create(user);
+        Response response = resource.create(dto);
         assertNotNull(response);
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
     }
@@ -78,21 +78,21 @@ public class UtilisateurResourceTest {
                 "0111111111"
         );
 
-        Utilisateur updated = new Utilisateur();
-        updated.setTelephone("0777777777");
-        updated.setEmail("newemail@test.com");
+        UtilisateurDTO dto = new UtilisateurDTO();
+        dto.telephone = "0777777777";
+        dto.email = "newemail@test.com";
 
-        Response response = resource.update(user.getId(), updated);
+        Response response = resource.update(user.getId(), dto);
         assertNotNull(response);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void testUpdateNotFound() {
-        Utilisateur updated = new Utilisateur();
-        updated.setTelephone("0777777777");
+        UtilisateurDTO dto = new UtilisateurDTO();
+        dto.telephone = "0777777777";
 
-        Response response = resource.update(99999L, updated);
+        Response response = resource.update(99999L, dto);
         assertNotNull(response);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
@@ -143,4 +143,3 @@ public class UtilisateurResourceTest {
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 }
-

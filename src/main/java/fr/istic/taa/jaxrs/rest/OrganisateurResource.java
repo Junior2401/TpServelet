@@ -4,6 +4,7 @@ import fr.istic.taa.jaxrs.domain.Organisateur;
 import fr.istic.taa.jaxrs.dto.OrganisateurDTO;
 import fr.istic.taa.jaxrs.service.OrganisateurService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 @Path("organisateurs")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Tag(name = "Organisateurs")
 public class OrganisateurResource {
 
     private final OrganisateurService service = new OrganisateurService();

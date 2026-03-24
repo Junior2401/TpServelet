@@ -86,4 +86,58 @@ public class ArtisteService {
             artisteDao.delete(artiste);
         }
     }
+
+    // -------------------------
+    // MÉTHODES MÉTIER
+    // -------------------------
+
+    public List<Artiste> getByNomDeScene(String nomDeScene) {
+        return artisteDao.findByNomDeScene(nomDeScene);
+    }
+
+    public Artiste getUniqueByNomDeScene(String nomDeScene) {
+        return artisteDao.findUniqueByNomDeScene(nomDeScene);
+    }
+
+    public List<Artiste> getByStyleArtistique(String style) {
+        return artisteDao.findByStyleArtistique(style);
+    }
+
+    public List<Artiste> getArtistesWithEvenements() {
+        return artisteDao.findArtistesWithEvenements();
+    }
+
+    public List<Artiste> getArtistesWithManyEvenements(int min) {
+        return artisteDao.findArtistesWithManyEvenements(min);
+    }
+
+    // -------------------------
+    // STATISTIQUES
+    // -------------------------
+
+    /**
+     * Nombre total d'artistes.
+     */
+    public Long getTotalArtistes() {
+        return (long) artisteDao.findAll().size();
+    }
+
+    /**
+     * Nombre d'artistes ayant participé à des événements.
+     */
+    public Long getNombreArtistesAvecEvenements() {
+        return (long) getArtistesWithEvenements().size();
+    }
+
+    /**
+     * Répartition des artistes par style artistique.
+     */
+    public java.util.Map<String, Long> getRepartitionParStyle() {
+        return artisteDao.findAll().stream()
+                .filter(a -> a.getStyleArtistique() != null)
+                .collect(java.util.stream.Collectors.groupingBy(
+                        Artiste::getStyleArtistique,
+                        java.util.stream.Collectors.counting()
+                ));
+    }
 }

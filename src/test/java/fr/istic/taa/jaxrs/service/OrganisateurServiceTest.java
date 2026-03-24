@@ -114,5 +114,42 @@ public class OrganisateurServiceTest {
         Organisateur org = service.getById(99999L);
         assertNull(org);
     }
-}
 
+    @Test
+    public void testGetBySociete() {
+        service.creerOrganisateur("Org1", "First", "org1@test.com", "pass1", adresse, "CompanyA", "0111111111");
+        service.creerOrganisateur("Org2", "Second", "org2@test.com", "pass2", adresse, "CompanyB", "0222222222");
+
+        List<Organisateur> byCompA = service.getBySociete("CompanyA");
+        List<Organisateur> byCompB = service.getBySociete("CompanyB");
+
+        assertNotNull(byCompA);
+        assertNotNull(byCompB);
+        assertTrue(byCompA.size() >= 1);
+        assertTrue(byCompB.size() >= 1);
+    }
+
+    @Test
+    public void testGetTotalOrganisateurs() {
+        service.creerOrganisateur("Org1", "First", "org1@test.com", "pass1", adresse, "Comp1", "0111111111");
+        service.creerOrganisateur("Org2", "Second", "org2@test.com", "pass2", adresse, "Comp2", "0222222222");
+
+        Long total = service.getTotalOrganisateurs();
+        assertNotNull(total);
+        assertTrue(total >= 2);
+    }
+
+    @Test
+    public void testGetRepartitionParSociete() {
+        service.creerOrganisateur("Org1", "First", "org1@test.com", "pass1", adresse, "CompanyA", "0111111111");
+        service.creerOrganisateur("Org2", "Second", "org2@test.com", "pass2", adresse, "CompanyB", "0222222222");
+        service.creerOrganisateur("Org3", "Third", "org3@test.com", "pass3", adresse, "CompanyA", "0333333333");
+
+        java.util.Map<String, Long> repartition = service.getRepartitionParSociete();
+        assertNotNull(repartition);
+        assertTrue(repartition.containsKey("CompanyA"));
+        assertTrue(repartition.containsKey("CompanyB"));
+        assertEquals(2, repartition.get("CompanyA"));
+        assertEquals(1, repartition.get("CompanyB"));
+    }
+}

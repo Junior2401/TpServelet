@@ -104,4 +104,100 @@ public class TicketService {
     public List<Ticket> getAbovePrice(int price) {
         return ticketDao.findTicketsAbovePrice(price);
     }
+
+
+    //--------------------------
+    //Méthode statistique
+    //--------------------------
+
+    // -------------------------
+    // STATISTIQUES
+    // -------------------------
+
+    /**
+     * Calcule le chiffre d'affaires total pour un événement spécifique.
+     * Exclut les tickets annulés pour refléter les revenus réels.
+     */
+    public Long getChiffreAffaireEvenement(Long eventId) {
+        List<Ticket> tickets = ticketDao.findByEvenement(eventId);
+        return tickets.stream()
+                .filter(t -> t.getDateAnnulation() == null)
+                .mapToLong(Ticket::getPrix)
+                .sum();
+    }
+
+    /**
+     * Calcule le taux de remplissage d'un événement.
+     */
+    public Double getTauxRemplissage(Long eventId) {
+        Evenement ev = evenementDao.findOne(eventId);
+        if (ev == null || ev.getCapacite() == null || ev.getCapacite() <= 0) return 0.0;
+
+        long ticketsVendus = ticketDao.findByEvenement(eventId).stream()
+                .filter(t -> t.getDateAnnulation() == null)
+                .count();
+
+        return (double) ticketsVendus / ev.getCapacite() * 100;
+    }
+
+    /**
+     * Récupère le nombre de tickets par statut (VENDU, ANNULE, etc.)
+     * Utile pour les graphiques de type Camembert (Pie Chart).
+     */
+    public java.util.Map<StatutTicket, Long> getRepartitionParStatut() {
+        return ticketDao.findAll().stream()
+                .collect(java.util.stream.Collectors.groupingBy(
+                        Ticket::getStatut,
+                        java.util.stream.Collectors.counting()
+                ));
+    }
+
+    /**
+     * Calcule le montant total perdu à cause des annulations.
+     */
+    public Long getManqueAGagnerAnnulations() {
+        return ticketDao.findAll().stream()
+                .filter(t -> t.getDateAnnulation() != null)
+                .mapToLong(Ticket::getPrix)
+                .sum();
+    }
+
+    /**
+     * Identifie les "Top Clients" (ceux qui ont acheté le plus de tickets).
+     */
+    public java.util.Map<String, Long> getTopAcheteurs(int limit) {
+        return ticketDao.findAll().stream()
+                .filter(t -> t.getUtilisateur() != null)
+                .collect(java.util.stream.Collectors.groupingBy(
+                        t -> t.getUtilisateur().getNom() + " " + t.getUtilisateur().getPrenom(),
+                        java.util.stream.Collectors.counting()
+                ))
+                .entrySet().stream()
+                .sorted(java.util.Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(limit)
+                .collect(java.util.stream.Collectors.toMap(
+                        java.util.Map.Entry::getKey,
+                        java.util.Map.Entry::getValue,
+                        (e1, e2) -> e1, java.util.LinkedHashMap::new
+                ));
+    }
+
+    public Ticket creerTicket(String numeroPlace, String place, StatutTicket statut, int prix, LocalDateTime dateAchat, LocalDateTime dateAnnulation, LocalDateTime dateRemboursement, Long eventId, Long userId) {
+        Evenement ev = evenementDao.findOne(eventId);
+        Utilisateur user = utilisateurDao.findOne(userId);
+
+        Ticket ticket = new Ticket();
+        ticket.setNumeroPlace(numeroPlace);
+        ticket.setPlace(place);
+        ticket.setStatut(statut);
+        ticket.setPrix(prix);
+        ticket.setDateAchat(dateAchat);
+        ticket.setDateAnnulation(dateAnnulation);
+        ticket.setDateRemboursement(dateRemboursement);
+        ticket.setEvenement(ev);
+        ticket.setUtilisateur(user);
+
+        ticketDao.save(ticket);
+        return ticket;
+    }
 }

@@ -5,6 +5,7 @@ import fr.istic.taa.jaxrs.dto.EvenementDTO;
 import fr.istic.taa.jaxrs.service.EvenementService;
 import fr.istic.taa.jaxrs.tools.tools;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @Path("evenements")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Tag(name = "Evenements")
 public class EvenementResource {
 
     private final EvenementService service = new EvenementService();
@@ -64,13 +66,13 @@ public class EvenementResource {
         }
 
         Evenement created = service.creerEvenement(
-                evenement.getLibelle(),
-                evenement.getLieu(),
-                evenement.getDate(),
-                evenement.getCapacite(),
-                evenement.getDescription(),
-                evenement.getStatut(),
-                dto.typeEvenementId.intValue()
+                dto.libelle,
+                dto.lieu,
+                dto.date,
+                dto.capacite,
+                dto.description,
+                dto.statut != null ? tools.StatutEvenement.valueOf(dto.statut) : tools.StatutEvenement.CREE,
+                dto.typeEvenementId
         );
         return Response.status(Response.Status.CREATED).entity(EvenementDTO.fromEntity(created)).build();
     }
@@ -163,7 +165,7 @@ public class EvenementResource {
     @Path("/{id}/organisateurs/{organisateurId}")
     @Operation(summary = "Ajoute un organisateur à un événement")
     public Response ajouterOrganisateur(@PathParam("id") Long id, @PathParam("organisateurId") Long organisateurId) {
-        Evenement updated = service.ajouterOrganisateur(id.intValue(), organisateurId.intValue());
+        Evenement updated = service.ajouterOrganisateur(id, organisateurId);
         if (updated == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -177,11 +179,10 @@ public class EvenementResource {
     @Path("/{id}/artistes/{artisteId}")
     @Operation(summary = "Ajoute un artiste à un événement")
     public Response ajouterArtiste(@PathParam("id") Long id, @PathParam("artisteId") Long artisteId) {
-        Evenement updated = service.ajouterArtiste(id.intValue(), artisteId);
+        Evenement updated = service.ajouterArtiste(id, artisteId);
         if (updated == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.ok(EvenementDTO.fromEntity(updated)).build();
     }
 }
-

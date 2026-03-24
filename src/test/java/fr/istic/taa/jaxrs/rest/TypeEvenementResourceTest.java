@@ -2,6 +2,7 @@ package fr.istic.taa.jaxrs.rest;
 
 import fr.istic.taa.jaxrs.domain.TypeEvenement;
 import fr.istic.taa.jaxrs.service.TypeEvenementService;
+import fr.istic.taa.jaxrs.dto.TypeEvenementDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import jakarta.ws.rs.core.Response;
@@ -47,11 +48,11 @@ public class TypeEvenementResourceTest {
 
     @Test
     public void testCreate() {
-        TypeEvenement type = new TypeEvenement();
-        type.setLibelle("NewType");
-        type.setDescription("New Type Description");
+        TypeEvenementDTO dto = new TypeEvenementDTO();
+        dto.libelle = "NewType";
+        dto.description = "New Type Description";
 
-        Response response = resource.create(type);
+        Response response = resource.create(dto);
         assertNotNull(response);
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
     }
@@ -63,21 +64,21 @@ public class TypeEvenementResourceTest {
                 "Un spectacle"
         );
 
-        TypeEvenement updated = new TypeEvenement();
-        updated.setLibelle("Spectacle Musical");
-        updated.setDescription("Un spectacle musical amélioré");
+        TypeEvenementDTO dto = new TypeEvenementDTO();
+        dto.libelle = "Spectacle Musical";
+        dto.description = "Un spectacle musical amélioré";
 
-        Response response = resource.update(type.getId(), updated);
+        Response response = resource.update(type.getId(), dto);
         assertNotNull(response);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void testUpdateNotFound() {
-        TypeEvenement updated = new TypeEvenement();
-        updated.setLibelle("UpdatedType");
+        TypeEvenementDTO dto = new TypeEvenementDTO();
+        dto.libelle = "UpdatedType";
 
-        Response response = resource.update(99999L, updated);
+        Response response = resource.update(99999L, dto);
         assertNotNull(response);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
@@ -101,4 +102,3 @@ public class TypeEvenementResourceTest {
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 }
-

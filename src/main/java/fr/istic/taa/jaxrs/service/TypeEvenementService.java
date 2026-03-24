@@ -65,7 +65,50 @@ public class TypeEvenementService {
         typeEvenementDao.delete(typeEvenement);
     }
 
+    // -------------------------
+    // MÉTHODES MÉTIER
+    // -------------------------
 
+    public TypeEvenement getByLibelle(String libelle) {
+        return typeEvenementDao.findByLibelle(libelle);
+    }
 
+    public List<TypeEvenement> getByLibelleContains(String libelle) {
+        return typeEvenementDao.findByLibelleContains(libelle);
+    }
+
+    public List<TypeEvenement> getWithDescription() {
+        return typeEvenementDao.findWithDescription();
+    }
+
+    public List<TypeEvenement> getWithoutDescription() {
+        return typeEvenementDao.findWithoutDescription();
+    }
+
+    // -------------------------
+    // STATISTIQUES
+    // -------------------------
+
+    /**
+     * Nombre total de types d'événements.
+     */
+    public Long getTotalTypes() {
+        return (long) typeEvenementDao.findAll().size();
+    }
+
+    /**
+     * Nombre de types avec description.
+     */
+    public Long getNombreTypesAvecDescription() {
+        return (long) getWithDescription().size();
+    }
+
+    /**
+     * Pourcentage de types avec description.
+     */
+    public Double getPourcentageTypesAvecDescription() {
+        long total = getTotalTypes();
+        if (total == 0) return 0.0;
+        return (double) getNombreTypesAvecDescription() / total * 100;
+    }
 }
-

@@ -82,4 +82,47 @@ public class AdministrateurService {
             administrateurDao.delete(admin);
         }
     }
+
+    // -------------------------
+    // MÉTHODES MÉTIER
+    // -------------------------
+
+    public List<Administrateur> getByRole(String role) {
+        return administrateurDao.findByRole(role);
+    }
+
+    public List<Administrateur> getByEmail(String email) {
+        return administrateurDao.findByEmail(email);
+    }
+
+    public Administrateur getUniqueByEmail(String email) {
+        return administrateurDao.findUniqueByEmail(email);
+    }
+
+    public List<Administrateur> getByNomComplet(String nom, String prenom) {
+        return administrateurDao.findByNomComplet(nom, prenom);
+    }
+
+    // -------------------------
+    // STATISTIQUES
+    // -------------------------
+
+    /**
+     * Nombre total d'administrateurs.
+     */
+    public Long getTotalAdministrateurs() {
+        return (long) administrateurDao.findAll().size();
+    }
+
+    /**
+     * Répartition des administrateurs par rôle.
+     */
+    public java.util.Map<String, Long> getRepartitionParRole() {
+        return administrateurDao.findAll().stream()
+                .filter(a -> a.getRole() != null)
+                .collect(java.util.stream.Collectors.groupingBy(
+                        Administrateur::getRole,
+                        java.util.stream.Collectors.counting()
+                ));
+    }
 }

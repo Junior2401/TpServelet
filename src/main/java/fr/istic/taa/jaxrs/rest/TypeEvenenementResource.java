@@ -4,6 +4,7 @@ import fr.istic.taa.jaxrs.domain.TypeEvenement;
 import fr.istic.taa.jaxrs.dto.TypeEvenementDTO;
 import fr.istic.taa.jaxrs.service.TypeEvenementService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 @Path("type_evenements")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Tag(name = "Types Evenements")
 public class TypeEvenenementResource {
 
   private final TypeEvenementService service = new TypeEvenementService();

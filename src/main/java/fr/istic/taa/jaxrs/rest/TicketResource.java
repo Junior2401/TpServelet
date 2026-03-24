@@ -5,6 +5,7 @@ import fr.istic.taa.jaxrs.dto.TicketDTO;
 import fr.istic.taa.jaxrs.service.TicketService;
 import fr.istic.taa.jaxrs.tools.tools.StatutTicket;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @Path("tickets")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Tag(name = "Tickets")
 public class TicketResource {
 
     private final TicketService service = new TicketService();

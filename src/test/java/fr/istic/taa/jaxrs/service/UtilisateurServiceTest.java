@@ -109,5 +109,66 @@ public class UtilisateurServiceTest {
         Utilisateur user = service.getById(99999L);
         assertNull(user);
     }
-}
 
+    @Test
+    public void testGetByNom() {
+        service.creerUtilisateur("Dupont", "Jean", "dupont@test.com", "pass1", adresse, "0111111111");
+        service.creerUtilisateur("Martin", "Paul", "martin@test.com", "pass2", adresse, "0222222222");
+
+        List<Utilisateur> duponts = service.getByNom("Dupont");
+        List<Utilisateur> martins = service.getByNom("Martin");
+
+        assertNotNull(duponts);
+        assertNotNull(martins);
+        assertTrue(duponts.size() >= 1);
+        assertTrue(martins.size() >= 1);
+    }
+
+    @Test
+    public void testGetByEmail() {
+        service.creerUtilisateur("User1", "First", "unique@test.com", "pass1", adresse, "0111111111");
+        service.creerUtilisateur("User2", "Second", "another@test.com", "pass2", adresse, "0222222222");
+
+        Utilisateur byEmail = service.getUniqueByEmail("unique@test.com");
+        assertNotNull(byEmail);
+        assertEquals("unique@test.com", byEmail.getEmail());
+    }
+
+    @Test
+    public void testGetByTelephone() {
+        service.creerUtilisateur("User1", "First", "user1@test.com", "pass1", adresse, "0123456789");
+        service.creerUtilisateur("User2", "Second", "user2@test.com", "pass2", adresse, "0987654321");
+
+        List<Utilisateur> byTel = service.getByTelephone("0123456789");
+        assertNotNull(byTel);
+        assertTrue(byTel.size() >= 1);
+        assertEquals("0123456789", byTel.get(0).getTelephone());
+    }
+
+    @Test
+    public void testGetTotalUtilisateurs() {
+        service.creerUtilisateur("User1", "First", "user1@test.com", "pass1", adresse, "0111111111");
+        service.creerUtilisateur("User2", "Second", "user2@test.com", "pass2", adresse, "0222222222");
+
+        Long total = service.getTotalUtilisateurs();
+        assertNotNull(total);
+        assertTrue(total >= 2);
+    }
+
+    @Test
+    public void testGetRepartitionParVille() {
+        Adresse adresseParis = new Adresse(1, "Rue Paris", "Paris");
+        Adresse adresseLyon = new Adresse(2, "Rue Lyon", "Lyon");
+
+        service.creerUtilisateur("User1", "First", "user1@test.com", "pass1", adresseParis, "0111111111");
+        service.creerUtilisateur("User2", "Second", "user2@test.com", "pass2", adresseLyon, "0222222222");
+        service.creerUtilisateur("User3", "Third", "user3@test.com", "pass3", adresseParis, "0333333333");
+
+        java.util.Map<String, Long> repartition = service.getRepartitionParVille();
+        assertNotNull(repartition);
+        assertTrue(repartition.containsKey("Paris"));
+        assertTrue(repartition.containsKey("Lyon"));
+        assertEquals(2, repartition.get("Paris"));
+        assertEquals(1, repartition.get("Lyon"));
+    }
+}

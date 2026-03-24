@@ -3,6 +3,7 @@ package fr.istic.taa.jaxrs.rest;
 import fr.istic.taa.jaxrs.domain.Artiste;
 import fr.istic.taa.jaxrs.domain.Adresse;
 import fr.istic.taa.jaxrs.service.ArtisteService;
+import fr.istic.taa.jaxrs.dto.ArtisteDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import jakarta.ws.rs.core.Response;
@@ -55,16 +56,15 @@ public class ArtisteResourceTest {
 
     @Test
     public void testCreate() {
-        Artiste artiste = new Artiste();
-        artiste.setNom("NewArtist");
-        artiste.setPrenom("New");
-        artiste.setEmail("new@art.com");
-        artiste.setPassword("password");
-        artiste.setAdresse(adresse);
-        artiste.setNomDeScene("NewScene");
-        artiste.setStyleArtistique("Rock");
+        ArtisteDTO dto = new ArtisteDTO();
+        dto.nom = "NewArtist";
+        dto.prenom = "New";
+        dto.email = "new@art.com";
+        dto.password = "password";
+        dto.nomDeScene = "NewScene";
+        dto.styleArtistique = "Rock";
 
-        Response response = resource.create(artiste);
+        Response response = resource.create(dto);
         assertNotNull(response);
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
     }
@@ -81,21 +81,21 @@ public class ArtisteResourceTest {
                 "UpdateStyle"
         );
 
-        Artiste updated = new Artiste();
-        updated.setNomDeScene("NewName");
-        updated.setStyleArtistique("Jazz");
+        ArtisteDTO dto = new ArtisteDTO();
+        dto.nomDeScene = "NewName";
+        dto.styleArtistique = "Jazz";
 
-        Response response = resource.update(artiste.getId(), updated);
+        Response response = resource.update(artiste.getId(), dto);
         assertNotNull(response);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void testUpdateNotFound() {
-        Artiste updated = new Artiste();
-        updated.setNomDeScene("NewName");
+        ArtisteDTO dto = new ArtisteDTO();
+        dto.nomDeScene = "NewName";
 
-        Response response = resource.update(99999L, updated);
+        Response response = resource.update(99999L, dto);
         assertNotNull(response);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
@@ -148,4 +148,3 @@ public class ArtisteResourceTest {
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 }
-

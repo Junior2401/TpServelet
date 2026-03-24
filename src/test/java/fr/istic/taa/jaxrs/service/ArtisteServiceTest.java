@@ -113,5 +113,57 @@ public class ArtisteServiceTest {
         Artiste artiste = service.getById(99999L);
         assertNull(artiste);
     }
-}
 
+    @Test
+    public void testGetByNomDeScene() {
+        service.creerArtiste("Art1", "First", "art1@test.com", "pass1", adresse, "Scene1", "Rock");
+        service.creerArtiste("Art2", "Second", "art2@test.com", "pass2", adresse, "Scene2", "Jazz");
+
+        List<Artiste> byScene1 = service.getByNomDeScene("Scene1");
+        List<Artiste> byScene2 = service.getByNomDeScene("Scene2");
+
+        assertNotNull(byScene1);
+        assertNotNull(byScene2);
+        assertTrue(byScene1.size() >= 1);
+        assertTrue(byScene2.size() >= 1);
+    }
+
+    @Test
+    public void testGetByStyleArtistique() {
+        service.creerArtiste("Art1", "First", "art1@test.com", "pass1", adresse, "Name1", "Rock");
+        service.creerArtiste("Art2", "Second", "art2@test.com", "pass2", adresse, "Name2", "Jazz");
+        service.creerArtiste("Art3", "Third", "art3@test.com", "pass3", adresse, "Name3", "Rock");
+
+        List<Artiste> rocks = service.getByStyleArtistique("Rock");
+        List<Artiste> jazzs = service.getByStyleArtistique("Jazz");
+
+        assertNotNull(rocks);
+        assertNotNull(jazzs);
+        assertTrue(rocks.size() >= 2);
+        assertTrue(jazzs.size() >= 1);
+    }
+
+    @Test
+    public void testGetTotalArtistes() {
+        service.creerArtiste("Art1", "First", "art1@test.com", "pass1", adresse, "Name1", "Style1");
+        service.creerArtiste("Art2", "Second", "art2@test.com", "pass2", adresse, "Name2", "Style2");
+
+        Long total = service.getTotalArtistes();
+        assertNotNull(total);
+        assertTrue(total >= 2);
+    }
+
+    @Test
+    public void testGetRepartitionParStyle() {
+        service.creerArtiste("Art1", "First", "art1@test.com", "pass1", adresse, "Name1", "Rock");
+        service.creerArtiste("Art2", "Second", "art2@test.com", "pass2", adresse, "Name2", "Jazz");
+        service.creerArtiste("Art3", "Third", "art3@test.com", "pass3", adresse, "Name3", "Rock");
+
+        java.util.Map<String, Long> repartition = service.getRepartitionParStyle();
+        assertNotNull(repartition);
+        assertTrue(repartition.containsKey("Rock"));
+        assertTrue(repartition.containsKey("Jazz"));
+        assertEquals(2, repartition.get("Rock"));
+        assertEquals(1, repartition.get("Jazz"));
+    }
+}

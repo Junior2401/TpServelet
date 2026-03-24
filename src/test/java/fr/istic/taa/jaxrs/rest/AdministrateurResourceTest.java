@@ -3,6 +3,7 @@ package fr.istic.taa.jaxrs.rest;
 import fr.istic.taa.jaxrs.domain.Administrateur;
 import fr.istic.taa.jaxrs.domain.Adresse;
 import fr.istic.taa.jaxrs.service.AdministrateurService;
+import fr.istic.taa.jaxrs.dto.AdministrateurDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import jakarta.ws.rs.core.Response;
@@ -54,15 +55,14 @@ public class AdministrateurResourceTest {
 
     @Test
     public void testCreate() {
-        Administrateur admin = new Administrateur();
-        admin.setNom("NewAdmin");
-        admin.setPrenom("New");
-        admin.setEmail("new@test.com");
-        admin.setPassword("password");
-        admin.setAdresse(adresse);
-        admin.setRole("ADMIN");
+        AdministrateurDTO dto = new AdministrateurDTO();
+        dto.nom = "NewAdmin";
+        dto.prenom = "New";
+        dto.email = "new@test.com";
+        dto.password = "password";
+        dto.role = "ADMIN";
 
-        Response response = resource.create(admin);
+        Response response = resource.create(dto);
         assertNotNull(response);
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
     }
@@ -78,21 +78,21 @@ public class AdministrateurResourceTest {
                 "ADMIN"
         );
 
-        Administrateur updated = new Administrateur();
-        updated.setNom("Updated");
-        updated.setRole("SUPER_ADMIN");
+        AdministrateurDTO dto = new AdministrateurDTO();
+        dto.nom = "Updated";
+        dto.role = "SUPER_ADMIN";
 
-        Response response = resource.update(admin.getId(), updated);
+        Response response = resource.update(admin.getId(), dto);
         assertNotNull(response);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void testUpdateNotFound() {
-        Administrateur updated = new Administrateur();
-        updated.setNom("Updated");
+        AdministrateurDTO dto = new AdministrateurDTO();
+        dto.nom = "Updated";
 
-        Response response = resource.update(99999L, updated);
+        Response response = resource.update(99999L, dto);
         assertNotNull(response);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
@@ -120,4 +120,3 @@ public class AdministrateurResourceTest {
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 }
-

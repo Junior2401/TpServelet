@@ -3,6 +3,7 @@ package fr.istic.taa.jaxrs.rest;
 import fr.istic.taa.jaxrs.domain.Organisateur;
 import fr.istic.taa.jaxrs.domain.Adresse;
 import fr.istic.taa.jaxrs.service.OrganisateurService;
+import fr.istic.taa.jaxrs.dto.OrganisateurDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import jakarta.ws.rs.core.Response;
@@ -55,16 +56,15 @@ public class OrganisateurResourceTest {
 
     @Test
     public void testCreate() {
-        Organisateur org = new Organisateur();
-        org.setNom("NewOrg");
-        org.setPrenom("New");
-        org.setEmail("new@org.com");
-        org.setPassword("password");
-        org.setAdresse(adresse);
-        org.setSociete("NewCompany");
-        org.setTelephonePro("0123456789");
+        OrganisateurDTO dto = new OrganisateurDTO();
+        dto.nom = "NewOrg";
+        dto.prenom = "New";
+        dto.email = "new@org.com";
+        dto.password = "password";
+        dto.societe = "NewCompany";
+        dto.telephonePro = "0123456789";
 
-        Response response = resource.create(org);
+        Response response = resource.create(dto);
         assertNotNull(response);
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
     }
@@ -81,21 +81,21 @@ public class OrganisateurResourceTest {
                 "0111111111"
         );
 
-        Organisateur updated = new Organisateur();
-        updated.setSociete("NewCompany");
-        updated.setTelephonePro("0777777777");
+        OrganisateurDTO dto = new OrganisateurDTO();
+        dto.societe = "NewCompany";
+        dto.telephonePro = "0777777777";
 
-        Response response = resource.update(org.getId(), updated);
+        Response response = resource.update(org.getId(), dto);
         assertNotNull(response);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void testUpdateNotFound() {
-        Organisateur updated = new Organisateur();
-        updated.setSociete("NewCompany");
+        OrganisateurDTO dto = new OrganisateurDTO();
+        dto.societe = "NewCompany";
 
-        Response response = resource.update(99999L, updated);
+        Response response = resource.update(99999L, dto);
         assertNotNull(response);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
@@ -148,4 +148,3 @@ public class OrganisateurResourceTest {
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 }
-

@@ -85,4 +85,58 @@ public class OrganisateurService {
             organisateurDao.delete(organisateur);
         }
     }
+
+    // -------------------------
+    // MÉTHODES MÉTIER
+    // -------------------------
+
+    public List<Organisateur> getBySociete(String societe) {
+        return organisateurDao.findBySociete(societe);
+    }
+
+    public Organisateur getUniqueBySociete(String societe) {
+        return organisateurDao.findUniqueBySociete(societe);
+    }
+
+    public List<Organisateur> getByTelephonePro(String telephone) {
+        return organisateurDao.findByTelephonePro(telephone);
+    }
+
+    public List<Organisateur> getOrganisteursWithEvenements() {
+        return organisateurDao.findOrganisteursWithEvenements();
+    }
+
+    public List<Organisateur> getOrganisteursWithManyEvenements(int min) {
+        return organisateurDao.findOrganisteursWithManyEvenements(min);
+    }
+
+    // -------------------------
+    // STATISTIQUES
+    // -------------------------
+
+    /**
+     * Nombre total d'organisateurs.
+     */
+    public Long getTotalOrganisateurs() {
+        return (long) organisateurDao.findAll().size();
+    }
+
+    /**
+     * Nombre d'organisateurs ayant organisé des événements.
+     */
+    public Long getNombreOrganisateursAvecEvenements() {
+        return (long) getOrganisteursWithEvenements().size();
+    }
+
+    /**
+     * Répartition des organisateurs par société.
+     */
+    public java.util.Map<String, Long> getRepartitionParSociete() {
+        return organisateurDao.findAll().stream()
+                .filter(o -> o.getSociete() != null)
+                .collect(java.util.stream.Collectors.groupingBy(
+                        Organisateur::getSociete,
+                        java.util.stream.Collectors.counting()
+                ));
+    }
 }

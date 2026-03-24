@@ -9,6 +9,7 @@ import fr.istic.taa.jaxrs.service.EvenementService;
 import fr.istic.taa.jaxrs.service.UtilisateurService;
 import fr.istic.taa.jaxrs.service.TypeEvenementService;
 import fr.istic.taa.jaxrs.tools.tools;
+import fr.istic.taa.jaxrs.dto.TicketDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import jakarta.ws.rs.core.Response;
@@ -49,7 +50,7 @@ public class TicketResourceTest {
                 100,
                 "Un concert de test",
                 tools.StatutEvenement.CREE,
-                1
+                1L
         );
 
         // Créer un utilisateur
@@ -72,18 +73,14 @@ public class TicketResourceTest {
 
     @Test
     public void testGetById() {
-        LocalDateTime now = LocalDateTime.now();
-        Ticket ticket = service.creerTicket(
-                "A1",
-                "Stalle",
-                tools.StatutTicket.ACHETE,
-                50,
-                now,
-                null,
-                null,
-                event.getId().intValue(),
-                user.getId().intValue()
-        );
+        Ticket ticket = new Ticket();
+        ticket.setNumeroPlace("A1");
+        ticket.setPlace("Stalle");
+        ticket.setStatut(tools.StatutTicket.ACHETE);
+        ticket.setPrix(50);
+        ticket.setDateAchat(LocalDateTime.now());
+
+        ticket = service.create(ticket, event.getId(), user.getId());
 
         Response response = resource.getById(ticket.getId());
         assertNotNull(response);
@@ -99,16 +96,15 @@ public class TicketResourceTest {
 
     @Test
     public void testCreate() {
-        Ticket ticket = new Ticket();
-        ticket.setNumeroPlace("B1");
-        ticket.setPlace("Balcon");
-        ticket.setStatut(tools.StatutTicket.ACHETE);
-        ticket.setPrix(40);
-        ticket.setDateAchat(LocalDateTime.now());
-        ticket.setEvenement(event);
-        ticket.setUtilisateur(user);
+        TicketDTO dto = new TicketDTO();
+        dto.numeroPlace = "B1";
+        dto.place = "Balcon";
+        dto.statut = "ACHETE";
+        dto.prix = 40;
+        dto.evenementId = event.getId();
+        dto.utilisateurId = user.getId();
 
-        Response response = resource.create(ticket);
+        Response response = resource.create(dto);
         assertNotNull(response);
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
     }
@@ -116,33 +112,29 @@ public class TicketResourceTest {
     @Test
     public void testUpdate() {
         LocalDateTime now = LocalDateTime.now();
-        Ticket ticket = service.creerTicket(
-                "C1",
-                "Parterre",
-                tools.StatutTicket.ACHETE,
-                60,
-                now,
-                null,
-                null,
-                event.getId().intValue(),
-                user.getId().intValue()
-        );
+        Ticket ticket = new Ticket();
+        ticket.setNumeroPlace("C1");
+        ticket.setPlace("Parterre");
+        ticket.setStatut(tools.StatutTicket.ACHETE);
+        ticket.setPrix(60);
+        ticket.setDateAchat(now);
+        ticket = service.create(ticket, event.getId(), user.getId());
 
-        Ticket updated = new Ticket();
-        updated.setStatut(tools.StatutTicket.ANNULE);
-        updated.setDateAnnulation(now.plusDays(1));
+        TicketDTO dto = new TicketDTO();
+        dto.statut = "ANNULE";
+        dto.dateAnnulation = now.plusDays(1);
 
-        Response response = resource.update(ticket.getId(), updated);
+        Response response = resource.update(ticket.getId(), dto);
         assertNotNull(response);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void testUpdateNotFound() {
-        Ticket updated = new Ticket();
-        updated.setStatut(tools.StatutTicket.ANNULE);
+        TicketDTO dto = new TicketDTO();
+        dto.statut = "ANNULE";
 
-        Response response = resource.update(99999L, updated);
+        Response response = resource.update(99999L, dto);
         assertNotNull(response);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
@@ -150,17 +142,13 @@ public class TicketResourceTest {
     @Test
     public void testDelete() {
         LocalDateTime now = LocalDateTime.now();
-        Ticket ticket = service.creerTicket(
-                "D1",
-                "VIP",
-                tools.StatutTicket.ACHETE,
-                100,
-                now,
-                null,
-                null,
-                event.getId().intValue(),
-                user.getId().intValue()
-        );
+        Ticket ticket = new Ticket();
+        ticket.setNumeroPlace("D1");
+        ticket.setPlace("VIP");
+        ticket.setStatut(tools.StatutTicket.ACHETE);
+        ticket.setPrix(100);
+        ticket.setDateAchat(now);
+        ticket = service.create(ticket, event.getId(), user.getId());
 
         Response response = resource.delete(ticket.getId());
         assertNotNull(response);
@@ -174,4 +162,3 @@ public class TicketResourceTest {
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 }
-

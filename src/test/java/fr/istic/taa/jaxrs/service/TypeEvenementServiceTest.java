@@ -76,10 +76,9 @@ public class TypeEvenementServiceTest {
                 "Une conférence"
         );
 
-        Long id = created.getId();
-        service.delete(id);
+        service.delete(created);
 
-        TypeEvenement retrieved = service.getById(id);
+        TypeEvenement retrieved = service.getById(created.getId());
         assertNull(retrieved);
     }
 
@@ -88,5 +87,28 @@ public class TypeEvenementServiceTest {
         TypeEvenement type = service.getById(99999L);
         assertNull(type);
     }
-}
 
+    @Test
+    public void testGetByLibelle() {
+        service.creerTypeEvenement("Concert", "Music event");
+        service.creerTypeEvenement("Théâtre", "Theater event");
+
+        TypeEvenement concert = service.getByLibelle("Concert");
+        TypeEvenement theatre = service.getByLibelle("Théâtre");
+
+        assertNotNull(concert);
+        assertNotNull(theatre);
+        assertEquals("Concert", concert.getLibelle());
+        assertEquals("Théâtre", theatre.getLibelle());
+    }
+
+    @Test
+    public void testGetTotalTypes() {
+        service.creerTypeEvenement("Type1", "Desc1");
+        service.creerTypeEvenement("Type2", "Desc2");
+
+        Long total = service.getTotalTypes();
+        assertNotNull(total);
+        assertTrue(total >= 2);
+    }
+}

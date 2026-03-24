@@ -9,6 +9,7 @@ import fr.istic.taa.jaxrs.service.ArtisteService;
 import fr.istic.taa.jaxrs.service.OrganisateurService;
 import fr.istic.taa.jaxrs.service.TypeEvenementService;
 import fr.istic.taa.jaxrs.tools.tools;
+import fr.istic.taa.jaxrs.dto.EvenementDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import jakarta.ws.rs.core.Response;
@@ -56,7 +57,7 @@ public class EvenementResourceTest {
                 300,
                 "Test Description",
                 tools.StatutEvenement.CREE,
-                1
+                1L
         );
 
         Response response = resource.getById(event.getId());
@@ -74,16 +75,17 @@ public class EvenementResourceTest {
     @Test
     public void testCreate() {
         LocalDateTime now = LocalDateTime.now();
-        Evenement event = new Evenement();
-        event.setLibelle("NewEvent");
-        event.setLieu("NewLieu");
-        event.setDate(now.plusDays(7));
-        event.setCapacite(500);
-        event.setDescription("New Description");
-        event.setStatut(tools.StatutEvenement.CREE);
-        event.setTypeEvenement(typeService.creerTypeEvenement("NewType", "Description"));
+        var type = typeService.creerTypeEvenement("NewType", "Description");
+        EvenementDTO dto = new EvenementDTO();
+        dto.libelle = "NewEvent";
+        dto.lieu = "NewLieu";
+        dto.date = now.plusDays(7);
+        dto.capacite = 500;
+        dto.description = "New Description";
+        dto.statut = "CREE";
+        dto.typeEvenementId = type.getId();
 
-        Response response = resource.create(event);
+        Response response = resource.create(dto);
         assertNotNull(response);
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
     }
@@ -98,24 +100,24 @@ public class EvenementResourceTest {
                 100,
                 "To Update Description",
                 tools.StatutEvenement.CREE,
-                1
+                1L
         );
 
-        Evenement updated = new Evenement();
-        updated.setLibelle("UpdatedEvent");
-        updated.setDescription("Updated Description");
+        EvenementDTO dto = new EvenementDTO();
+        dto.libelle = "UpdatedEvent";
+        dto.description = "Updated Description";
 
-        Response response = resource.update(event.getId(), updated);
+        Response response = resource.update(event.getId(), dto);
         assertNotNull(response);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void testUpdateNotFound() {
-        Evenement updated = new Evenement();
-        updated.setLibelle("UpdatedEvent");
+        EvenementDTO dto = new EvenementDTO();
+        dto.libelle = "UpdatedEvent";
 
-        Response response = resource.update(99999L, updated);
+        Response response = resource.update(99999L, dto);
         assertNotNull(response);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
@@ -130,7 +132,7 @@ public class EvenementResourceTest {
                 100,
                 "To Delete Description",
                 tools.StatutEvenement.CREE,
-                1
+                1L
         );
 
         Response response = resource.delete(event.getId());
@@ -155,7 +157,7 @@ public class EvenementResourceTest {
                 100,
                 "Description",
                 tools.StatutEvenement.CREE,
-                1
+                1L
         );
 
         Response response = resource.getOrganisateurs(event.getId());
@@ -180,7 +182,7 @@ public class EvenementResourceTest {
                 100,
                 "Description",
                 tools.StatutEvenement.CREE,
-                1
+                1L
         );
 
         Response response = resource.getArtistes(event.getId());
@@ -205,7 +207,7 @@ public class EvenementResourceTest {
                 100,
                 "Description",
                 tools.StatutEvenement.CREE,
-                1
+                1L
         );
 
         Response response = resource.getTickets(event.getId());
@@ -220,4 +222,3 @@ public class EvenementResourceTest {
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 }
-
