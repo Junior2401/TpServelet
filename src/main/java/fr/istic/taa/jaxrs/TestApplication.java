@@ -22,6 +22,7 @@ import java.util.Set;
 import fr.istic.taa.jaxrs.rest.*;
 import fr.istic.taa.jaxrs.tools.JacksonConfig;
 import io.swagger.v3.jaxrs2.integration.resources.AcceptHeaderOpenApiResource;
+import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -51,9 +52,8 @@ public class TestApplication extends Application {
 
         clazzes.add(AcceptHeaderOpenApiResource.class);
         clazzes.add(SwaggerResource.class);
-        clazzes.add(PetResource.class);
+        clazzes.add(OpenApiResource.class);
         clazzes.add(JacksonConfig.class);
-//        clazzes.add(AcceptHeaderOpenApiResource.class);
         clazzes.add(TypeEvenenementResource.class);
         clazzes.add(OrganisateurResource.class);
         clazzes.add(UtilisateurResource.class);

@@ -18,7 +18,7 @@ public class RestServer {
         UndertowJaxrsServer ut = new UndertowJaxrsServer();
 
         TestApplication ta = new TestApplication();
-
+        DataInitializer.initialize();
         ut.deploy(ta);
 
         ut.start(

@@ -10,6 +10,7 @@ public abstract class tools {
     public enum StatutEvenement {
         CREE,
         VALIDE,
-        ANNULE
+        ANNULE,
+        PLANIFIE
     }
 }
