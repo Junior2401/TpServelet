@@ -27,6 +27,8 @@ public class RestServer {
 
         );
 
+
+
         logger.info("JAX-RS based micro-service running!");
     }
 }

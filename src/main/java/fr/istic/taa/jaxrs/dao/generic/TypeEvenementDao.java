@@ -79,16 +79,6 @@ public class TypeEvenementDao extends AbstractJpaDao<Long, TypeEvenement> {
     }
 
     // ---------------------------
-    // MÉTHODES MÉTIER - Tous les Types
-    // ---------------------------
-
-    public List<TypeEvenement> findAllTypeEvenements() {
-        return entityManager
-                .createQuery("SELECT t FROM TypeEvenement t ORDER BY t.libelle ASC", TypeEvenement.class)
-                .getResultList();
-    }
-
-    // ---------------------------
     // MÉTHODES UTILITAIRES
     // ---------------------------
 

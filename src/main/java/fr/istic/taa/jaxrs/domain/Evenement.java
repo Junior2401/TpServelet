@@ -9,9 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Schema(description = "Représente un événement (concert, théâtre, etc.)")
 @JsonIdentityInfo(
@@ -52,6 +50,12 @@ public class Evenement implements Serializable {
     @JoinColumn(name = "type_evenement_id")
     @Schema(description = "Type d'événement associé")
     private TypeEvenement typeEvenement;
+
+    @ElementCollection
+    @CollectionTable(name = "evenement_types_place", joinColumns = @JoinColumn(name = "evenement_id"))
+    @Column(name = "type_place")
+    @Schema(description = "Liste des types de places disponibles")
+    private List<String> typesPlace = new ArrayList<>();
 
 
     // --- Evenement ↔ Ticket ---
@@ -184,6 +188,15 @@ public class Evenement implements Serializable {
     public void setTypeEvenement(TypeEvenement typeEvenement) {
         this.typeEvenement = typeEvenement;
     }
+
+    public List<String> getTypesPlace() {
+        return typesPlace;
+    }
+
+    public void setTypesPlace(List<String> typesPlace) {
+        this.typesPlace = typesPlace;
+    }
+
 
     @Override
     public String toString() {

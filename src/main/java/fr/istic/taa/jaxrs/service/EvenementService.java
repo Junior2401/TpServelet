@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Transactional
 public class EvenementService {
@@ -31,7 +32,7 @@ public class EvenementService {
     }
 
     // -------------------------
-    // CREATE
+    // CREATEa
     // -------------------------
     public Evenement creerEvenement(String libelle,
                                     String lieu,
@@ -39,7 +40,8 @@ public class EvenementService {
                                     Integer capacite,
                                     String description,
                                     tools.StatutEvenement statut,
-                                    Long typeEvenementId) {
+                                    Long typeEvenementId,
+                                    List<String> typesPlace) {
 
         TypeEvenement type = typeEvenementDao.findOne(typeEvenementId);
 
@@ -58,6 +60,7 @@ public class EvenementService {
                 type
         );
 
+        evenement.setTypesPlace(typesPlace);
         evenementDao.save(evenement);
         return evenement;
     }
@@ -108,6 +111,10 @@ public class EvenementService {
 
         if (updated.getStatut() != null) {
             existing.setStatut(updated.getStatut());
+        }
+
+        if (updated.getTypesPlace() != null) {
+            existing.setTypesPlace(updated.getTypesPlace());
         }
 
         return evenementDao.update(existing);

@@ -7,12 +7,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class DataInitializer {
+
     private static final Logger logger = Logger.getLogger(DataInitializer.class.getName());
 
     private DataInitializer() {}
@@ -25,62 +24,112 @@ public class DataInitializer {
         EntityManager manager = EntityManagerHelper.getEntityManager();
         EntityTransaction tx = manager.getTransaction();
         tx.begin();
+
         try {
-            // 1. Création des Types d'Événements
+            // -----------------------------
+            // 1. TYPES D'ÉVÉNEMENTS
+            // -----------------------------
             TypeEvenement typeConcert = new TypeEvenement();
             typeConcert.setLibelle("Concert");
             typeConcert.setDescription("Événements musicaux live");
             manager.persist(typeConcert);
 
-            // 2. Création des Artistes
+            TypeEvenement typeTheatre = new TypeEvenement();
+            typeTheatre.setLibelle("Théâtre");
+            typeTheatre.setDescription("Représentations théâtrales");
+            manager.persist(typeTheatre);
+
+            TypeEvenement typeSport = new TypeEvenement();
+            typeSport.setLibelle("Sport");
+            typeSport.setDescription("Compétitions sportives");
+            manager.persist(typeSport);
+
+            // -----------------------------
+            // 2. ARTISTES
+            // -----------------------------
             List<Artiste> artistes = createArtistes();
             artistes.forEach(manager::persist);
 
-            // 3. Création des Organisateurs
-            Organisateur rockEnSeine = createOrganisateur();
-            manager.persist(rockEnSeine);
+            // -----------------------------
+            // 3. ORGANISATEURS
+            // -----------------------------
+            Organisateur org1 = createOrganisateur("Martin", "Jean", "Rock en Seine Corp");
+            Organisateur org2 = createOrganisateur("Dupuis", "Claire", "Live Nation France");
+            Organisateur org3 = createOrganisateur("Nguyen", "Paul", "EventMaster");
+            manager.persist(org1);
+            manager.persist(org2);
+            manager.persist(org3);
 
-            // 4. Création de l'Événement
-            Evenement evenement = new Evenement();
-            evenement.setLibelle("Festival Spring 2026");
-            evenement.setLieu("Parc des Expos, Rennes");
-            evenement.setDate(LocalDateTime.now().plusMonths(2));
-            evenement.setCapacite(5000);
-            evenement.setDescription("Le plus grand festival de printemps.");
-            evenement.setStatut(tools.StatutEvenement.PLANIFIE);
-            evenement.setTypeEvenement(typeConcert);
+            // -----------------------------
+            // 4. ÉVÉNEMENTS
+            // -----------------------------
+            Evenement ev1 = new Evenement();
+            ev1.setLibelle("Festival Spring 2026");
+            ev1.setLieu("Parc des Expos, Rennes");
+            ev1.setDate(LocalDateTime.now().plusMonths(2));
+            ev1.setCapacite(5000);
+            ev1.setDescription("Le plus grand festival de printemps.");
+            ev1.setStatut(tools.StatutEvenement.PLANIFIE);
+            ev1.setTypeEvenement(typeConcert);
+            ev1.setTypesPlace(List.of("VIP", "STANDARD", "TRIBUNE"));
+            ev1.setArtistes(new HashSet<>(artistes.subList(0, 2)));
+            ev1.getOrganisateurs().add(org1);
+            manager.persist(ev1);
 
-            // Associations
-            evenement.setArtistes(new HashSet<>(artistes.subList(0, 2))); // Prend les 2 premiers
-            evenement.getOrganisateurs().add(rockEnSeine);
+            Evenement ev2 = new Evenement();
+            ev2.setLibelle("Match Rennes vs Lyon");
+            ev2.setLieu("Roazhon Park, Rennes");
+            ev2.setDate(LocalDateTime.now().plusDays(15));
+            ev2.setCapacite(29000);
+            ev2.setDescription("Match de Ligue 1");
+            ev2.setStatut(tools.StatutEvenement.VALIDE);
+            ev2.setTypeEvenement(typeSport);
+            ev2.setTypesPlace(List.of("PELOUSE", "TRIBUNE NORD", "TRIBUNE SUD"));
+            ev2.getOrganisateurs().add(org3);
+            manager.persist(ev2);
 
-            manager.persist(evenement);
+            Evenement ev3 = new Evenement();
+            ev3.setLibelle("Pièce : Le Malade Imaginaire");
+            ev3.setLieu("Théâtre National de Bretagne");
+            ev3.setDate(LocalDateTime.now().plusWeeks(3));
+            ev3.setCapacite(800);
+            ev3.setDescription("Représentation classique de Molière.");
+            ev3.setStatut(tools.StatutEvenement.PLANIFIE);
+            ev3.setTypeEvenement(typeTheatre);
+            ev3.setTypesPlace(List.of("ORCHESTRE", "BALCON", "LOGE"));
+            ev3.getOrganisateurs().add(org2);
+            manager.persist(ev3);
 
-            // 5. Création Utilisateur & Tickets
+            // -----------------------------
+            // 5. UTILISATEUR + TICKETS
+            // -----------------------------
             Utilisateur client = createUtilisateur();
             manager.persist(client);
 
-            Ticket t1 = createTicket("A-12", "Rangée 1", 55, evenement, client);
-            Ticket t2 = createTicket("A-13", "Rangée 1", 55, evenement, client);
+            manager.persist(createTicket("A-12", "Rangée 1", 55, ev1, client));
+            manager.persist(createTicket("A-13", "Rangée 1", 55, ev1, client));
+            manager.persist(createTicket("B-05", "Tribune Nord", 35, ev2, client));
 
-            manager.persist(t1);
-            manager.persist(t2);
-
-            // 6. Création Administrateur
+            // -----------------------------
+            // 6. ADMINISTRATEUR
+            // -----------------------------
             manager.persist(createAdministrateur());
 
             tx.commit();
             logger.info("Données initialisées avec succès !");
+
         } catch (Exception e) {
-            if (tx.isActive()) {
-                tx.rollback();
-            }
+            if (tx.isActive()) tx.rollback();
             logger.severe("Erreur lors de l'initialisation : " + e.getMessage());
             e.printStackTrace();
         } finally {
             manager.close();
         }
     }
+
+    // -----------------------------------------------------
+    // MÉTHODES DE CRÉATION
+    // -----------------------------------------------------
 
     private List<Artiste> createArtistes() {
         List<Artiste> list = new ArrayList<>();
@@ -102,17 +151,25 @@ public class DataInitializer {
         a2.setEmail("luna@music.com");
         list.add(a2);
 
+        Artiste a3 = new Artiste();
+        a3.setNom("Khan");
+        a3.setPrenom("Amina");
+        a3.setNomDeScene("Amina K.");
+        a3.setStyleArtistique("Soul");
+        a3.setEmail("amina@soul.com");
+        list.add(a3);
+
         return list;
     }
 
-    private Organisateur createOrganisateur() {
+    private Organisateur createOrganisateur(String nom, String prenom, String societe) {
         Organisateur orga = new Organisateur();
-        orga.setNom("Martin");
-        orga.setPrenom("Jean");
-        orga.setEmail("contact@rockenseine.fr");
-        orga.setSociete("Rock en Seine Corp");
+        orga.setNom(nom);
+        orga.setPrenom(prenom);
+        orga.setEmail(prenom.toLowerCase() + "." + nom.toLowerCase() + "@example.com");
+        orga.setSociete(societe);
         orga.setTelephonePro("0123456789");
-        orga.setAdresse(new Adresse(5, "Avenue de la République", "Saint-Cloud (92210)"));
+        orga.setAdresse(new Adresse(10, "Rue Centrale", "Rennes (35000)"));
         return orga;
     }
 

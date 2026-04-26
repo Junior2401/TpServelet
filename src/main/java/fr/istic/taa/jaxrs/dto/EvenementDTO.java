@@ -4,6 +4,7 @@ import fr.istic.taa.jaxrs.domain.Evenement;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Schema(description = "DTO pour créer, mettre à jour et exposer un événement")
 public class EvenementDTO {
@@ -32,6 +33,9 @@ public class EvenementDTO {
     @Schema(description = "ID du type d'événement associé", example = "1")
     public Long typeEvenementId;
 
+    @Schema(description = "Liste des types de places disponibles", example = "[\"VIP\", \"STANDARD\", \"TRIBUNE\"]")
+    public List<String> typesPlace;
+
     public EvenementDTO() {}
 
     public static EvenementDTO fromEntity(Evenement evenement) {
@@ -42,6 +46,8 @@ public class EvenementDTO {
         dto.date = evenement.getDate();
         dto.capacite = evenement.getCapacite();
         dto.description = evenement.getDescription();
+        dto.typesPlace = evenement.getTypesPlace();
+
         if (evenement.getStatut() != null) {
             dto.statut = evenement.getStatut().toString();
         }
@@ -59,7 +65,8 @@ public class EvenementDTO {
         e.setDate(this.date);
         e.setCapacite(this.capacite);
         e.setDescription(this.description);
+        e.setTypesPlace(this.typesPlace);
+
         return e;
     }
 }
-

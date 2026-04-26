@@ -10,7 +10,6 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,15 +54,6 @@ public class EvenementResource {
     @POST
     @Operation(summary = "Crée un nouvel événement")
     public Response create(EvenementDTO dto) {
-        Evenement evenement = new Evenement();
-        evenement.setLibelle(dto.libelle);
-        evenement.setLieu(dto.lieu);
-        evenement.setDate(dto.date);
-        evenement.setCapacite(dto.capacite);
-        evenement.setDescription(dto.description);
-        if (dto.statut != null) {
-            evenement.setStatut(tools.StatutEvenement.valueOf(dto.statut));
-        }
 
         Evenement created = service.creerEvenement(
                 dto.libelle,
@@ -72,9 +62,13 @@ public class EvenementResource {
                 dto.capacite,
                 dto.description,
                 dto.statut != null ? tools.StatutEvenement.valueOf(dto.statut) : tools.StatutEvenement.CREE,
-                dto.typeEvenementId
+                dto.typeEvenementId,
+                dto.typesPlace // ⭐ AJOUT
         );
-        return Response.status(Response.Status.CREATED).entity(EvenementDTO.fromEntity(created)).build();
+
+        return Response.status(Response.Status.CREATED)
+                .entity(EvenementDTO.fromEntity(created))
+                .build();
     }
 
     // -------------------------
@@ -84,20 +78,25 @@ public class EvenementResource {
     @Path("/{id}")
     @Operation(summary = "Met à jour un événement")
     public Response update(@PathParam("id") Long id, EvenementDTO dto) {
+
         Evenement updated = new Evenement();
         updated.setLibelle(dto.libelle);
         updated.setLieu(dto.lieu);
         updated.setDate(dto.date);
         updated.setCapacite(dto.capacite);
         updated.setDescription(dto.description);
+
         if (dto.statut != null) {
             updated.setStatut(tools.StatutEvenement.valueOf(dto.statut));
         }
+
+        updated.setTypesPlace(dto.typesPlace);
 
         Evenement saved = service.update(id, updated);
         if (saved == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+
         return Response.ok(EvenementDTO.fromEntity(saved)).build();
     }
 
@@ -166,9 +165,6 @@ public class EvenementResource {
     @Operation(summary = "Ajoute un organisateur à un événement")
     public Response ajouterOrganisateur(@PathParam("id") Long id, @PathParam("organisateurId") Long organisateurId) {
         Evenement updated = service.ajouterOrganisateur(id, organisateurId);
-        if (updated == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
         return Response.ok(EvenementDTO.fromEntity(updated)).build();
     }
 
@@ -180,9 +176,6 @@ public class EvenementResource {
     @Operation(summary = "Ajoute un artiste à un événement")
     public Response ajouterArtiste(@PathParam("id") Long id, @PathParam("artisteId") Long artisteId) {
         Evenement updated = service.ajouterArtiste(id, artisteId);
-        if (updated == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
         return Response.ok(EvenementDTO.fromEntity(updated)).build();
     }
 }
